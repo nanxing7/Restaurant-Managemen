@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fyd.cygl.dao.OrdersMapper" >
+  <resultMap id="BaseResultMap" type="com.fyd.cygl.entity.Orders" >
+    <id column="Oid" property="oid" jdbcType="VARCHAR" />
+    <result column="Tid" property="tid" jdbcType="INTEGER" />
+    <result column="Number" property="number" jdbcType="INTEGER" />
+    <result column="Sid" property="sid" jdbcType="INTEGER" />
+    <result column="Time" property="time" jdbcType="TIMESTAMP" />
+    <result column="PrePrice" property="preprice" jdbcType="DOUBLE" />
+    <result column="DiscountPrice" property="discountprice" jdbcType="DOUBLE" />
+    <result column="RealPrice" property="realprice" jdbcType="DOUBLE" />
+    <result column="Payment" property="payment" jdbcType="VARCHAR" />
+    <result column="Phone" property="phone" jdbcType="VARCHAR" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    Oid, Tid, Number, Sid, Time, PrePrice, DiscountPrice, RealPrice, Payment, Phone, 
+    Name, Status
+  </sql>
+
+
+
+<!--  自写按年月查询数据-->
+  <select id="selectByYearAndMonth" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from orders
+    where DATE_FORMAT(Time,'%Y-%m') = #{month,jdbcType=VARCHAR}
+  </select>
+<!--  自写按年月查询数据-->
+
+
+
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.fyd.cygl.entity.OrdersExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from orders
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from orders
+    where Oid = #{oid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from orders
+    where Oid = #{oid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.fyd.cygl.entity.OrdersExample" >
+    delete from orders
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.fyd.cygl.entity.Orders" >
+    insert into orders (Oid, Tid, Number, 
+      Sid, Time, PrePrice, 
+      DiscountPrice, RealPrice, Payment, 
+      Phone, Name, Status
+      )
+    values (#{oid,jdbcType=VARCHAR}, #{tid,jdbcType=INTEGER}, #{number,jdbcType=INTEGER}, 
+      #{sid,jdbcType=INTEGER}, #{time,jdbcType=TIMESTAMP}, #{preprice,jdbcType=DOUBLE}, 
+      #{discountprice,jdbcType=DOUBLE}, #{realprice,jdbcType=DOUBLE}, #{payment,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fyd.cygl.entity.Orders" >
+    insert into orders
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="oid != null" >
+        Oid,
+      </if>
+      <if test="tid != null" >
+        Tid,
+      </if>
+      <if test="number != null" >
+        Number,
+      </if>
+      <if test="sid != null" >
+        Sid,
+      </if>
+      <if test="time != null" >
+        Time,
+      </if>
+      <if test="preprice != null" >
+        PrePrice,
+      </if>
+      <if test="discountprice != null" >
+        DiscountPrice,
+      </if>
+      <if test="realprice != null" >
+        RealPrice,
+      </if>
+      <if test="payment != null" >
+        Payment,
+      </if>
+      <if test="phone != null" >
+        Phone,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="status != null" >
+        Status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="oid != null" >
+        #{oid,jdbcType=VARCHAR},
+      </if>
+      <if test="tid != null" >
+        #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null" >
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="preprice != null" >
+        #{preprice,jdbcType=DOUBLE},
+      </if>
+      <if test="discountprice != null" >
+        #{discountprice,jdbcType=DOUBLE},
+      </if>
+      <if test="realprice != null" >
+        #{realprice,jdbcType=DOUBLE},
+      </if>
+      <if test="payment != null" >
+        #{payment,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.fyd.cygl.entity.OrdersExample" resultType="java.lang.Integer" >
+    select count(*) from orders
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update orders
+    <set >
+      <if test="record.oid != null" >
+        Oid = #{record.oid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tid != null" >
+        Tid = #{record.tid,jdbcType=INTEGER},
+      </if>
+      <if test="record.number != null" >
+        Number = #{record.number,jdbcType=INTEGER},
+      </if>
+      <if test="record.sid != null" >
+        Sid = #{record.sid,jdbcType=INTEGER},
+      </if>
+      <if test="record.time != null" >
+        Time = #{record.time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.preprice != null" >
+        PrePrice = #{record.preprice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.discountprice != null" >
+        DiscountPrice = #{record.discountprice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.realprice != null" >
+        RealPrice = #{record.realprice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.payment != null" >
+        Payment = #{record.payment,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        Phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null" >
+        Name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        Status = #{record.status,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update orders
+    set Oid = #{record.oid,jdbcType=VARCHAR},
+      Tid = #{record.tid,jdbcType=INTEGER},
+      Number = #{record.number,jdbcType=INTEGER},
+      Sid = #{record.sid,jdbcType=INTEGER},
+      Time = #{record.time,jdbcType=TIMESTAMP},
+      PrePrice = #{record.preprice,jdbcType=DOUBLE},
+      DiscountPrice = #{record.discountprice,jdbcType=DOUBLE},
+      RealPrice = #{record.realprice,jdbcType=DOUBLE},
+      Payment = #{record.payment,jdbcType=VARCHAR},
+      Phone = #{record.phone,jdbcType=VARCHAR},
+      Name = #{record.name,jdbcType=VARCHAR},
+      Status = #{record.status,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fyd.cygl.entity.Orders" >
+    update orders
+    <set >
+      <if test="tid != null" >
+        Tid = #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="number != null" >
+        Number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null" >
+        Sid = #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        Time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="preprice != null" >
+        PrePrice = #{preprice,jdbcType=DOUBLE},
+      </if>
+      <if test="discountprice != null" >
+        DiscountPrice = #{discountprice,jdbcType=DOUBLE},
+      </if>
+      <if test="realprice != null" >
+        RealPrice = #{realprice,jdbcType=DOUBLE},
+      </if>
+      <if test="payment != null" >
+        Payment = #{payment,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        Phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        Status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where Oid = #{oid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fyd.cygl.entity.Orders" >
+    update orders
+    set Tid = #{tid,jdbcType=INTEGER},
+      Number = #{number,jdbcType=INTEGER},
+      Sid = #{sid,jdbcType=INTEGER},
+      Time = #{time,jdbcType=TIMESTAMP},
+      PrePrice = #{preprice,jdbcType=DOUBLE},
+      DiscountPrice = #{discountprice,jdbcType=DOUBLE},
+      RealPrice = #{realprice,jdbcType=DOUBLE},
+      Payment = #{payment,jdbcType=VARCHAR},
+      Phone = #{phone,jdbcType=VARCHAR},
+      Name = #{name,jdbcType=VARCHAR},
+      Status = #{status,jdbcType=INTEGER}
+    where Oid = #{oid,jdbcType=VARCHAR}
+  </update>
+</mapper>

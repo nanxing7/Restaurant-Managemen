@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<!--代码由www.magicalcoder.com可视化布局器拖拽生成-->
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>餐饮管理系统</title>
+  <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" />
+  <link href="http://www.magicalcoder.com/magicaldrag/assets/drag/ui/magicalcoder/1.1.0/magicalcoder.css" rel="stylesheet">
+    <script src="https://lib.baomitu.com/json3/3.3.3/json3.min.js"></script>
+  <script src="https://www.layuicdn.com/layui-v2.5.4/layui.all.js"></script>
+  <script src="https://lib.baomitu.com/echarts/4.6.0/echarts.min.js"></script>
+ <script src="http://www.magicalcoder.com/magicaldrag/assets/drag/ui/magicalcoder/1.1.0/magicalcoder.js"></script>
+<!--layui的table col操作列自定义的模板 您可以根据自己的实际情况改动-->
+<!--  <script type="text/html" id="tableToolbar">-->
+<!--    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>-->
+<!--    <div class="layui-inline" lay-event="update"><i class="layui-icon layui-icon-edit"></i></div>-->
+<!--    <div class="layui-inline" lay-event="delete"><i class="layui-icon layui-icon-delete"></i></div>-->
+<!--  </script>-->
+<!--  <script type="text/html" id="tableColToolbar">-->
+<!--    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>-->
+<!--    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
+<!--    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+<!--  </script>-->
+</head>
+<body class="layui-form" style="background-color:#eee;padding: 20px;">
+    <div class="layui-row">
+        <div class="layui-col-xs12">
+            <div class="layui-row" id="searchLike">
+                <div class="layui-col-md6" style="width: 33.3333%;">
+                    <input class="layui-input" type="text" autocomplete="off" />
+                </div>
+                <div class="layui-col-md6" style="width: 11.7094%; height: 64px;">
+                    <select><option value="0">所属房间</option><option value="1">桌台号</option></select>
+                </div>
+                <div class="layui-col-md6" style="width: 7.28362%; height: 64px;">
+                    <a class="layui-btn layui-btn-normal" href="javascript:;" onclick="clicksearch()">搜索</a>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs12">
+            <span class="magical-coder-layer-contaner">
+                <div class="magicalcoder-layer-content">
+                <div id="tabledemo" class="magicalcoder-table"
+                mc-attr-bool-loading="true" 
+                mc-attr-str-url="/tables"
+                mc-attr-str-toolbar="#tableToolbar" 
+                mc-attr-json-default-toolbar="[&quot;filter&quot;]" 
+                mc-attr-str-skin="line" 
+                mc-attr-bool-page="true" 
+                mc-attr-str-method="post"
+                mc-attr-bool-total-row="false"
+                     lay-filter="crud"
+                mc-attr-bool-even="true">
+                    <div id="tableToolbar" class="magicalcoder-table-tool-bar layui-hide">
+                        <div class="layui-inline" lay-event="add">
+                            <i class="layui-icon layui-icon-add-1"></i>
+                        </div>
+<!--                        <div class="layui-inline" lay-event="update">-->
+<!--                            <i class="layui-icon layui-icon-edit"></i>-->
+<!--                        </div>-->
+<!--                        <div class="layui-inline" lay-event="delete">-->
+<!--                            <i class="layui-icon layui-icon-delete"></i>-->
+<!--                        </div>-->
+                    </div>
+                    <span class="magicalcoder-table-th layui-hide" mc-attr-str-field="tid">桌台号</span>
+                    <span class="magicalcoder-table-th layui-hide" mc-attr-str-field="seatnum">座位数</span>
+                    <span class="magicalcoder-table-th layui-hide" mc-attr-str-field="room">所属房间</span>
+<!--                    <span class="magicalcoder-table-th layui-hide" mc-attr-str-field="status">使用状态</span>-->
+                    <span class="magicalcoder-table-th layui-hide" mc-attr-str-toolbar="#tableColToolbar">操作</span>
+                    <div id="tableColToolbar" class="magicalcoder-table-col-tool-bar layui-hide">
+                        <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+                        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    </div>
+                </div>
+            </div>
+            </span>
+        </div>
+<!--        弹出层form1  (div隐藏)-->
+        <div class="site-text" style="margin: 5%; display: none" id="window"  target="test123">
+            <form class="layui-form" id="tableform" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">座位数</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="seatnum" name="seatnum" lay-verify="title" autocomplete="off" placeholder="请输入座位数" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">所属房间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="room" name="room" lay-verify="title" autocomplete="off" placeholder="请输入所属房间" class="layui-input">
+                    </div>
+                </div>
+
+
+                <!--  <div class="layui-form-item">
+                   <div class="layui-input-block">
+                     <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                   </div>
+                 </div> -->
+            </form>
+        </div>
+<!--        弹出层form2 （div隐藏）-->
+        <div class="site-text" style="margin: 5%; display: none" id="window1">
+            <form class="layui-form" id="tableform1" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">桌台号</label>
+                    <div class="layui-input-block">
+                        <input type="text" readonly="readonly" disabled="disabled" id="tid1" name="tid1" lay-verify="title" autocomplete="off"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">座位数</label>
+                    <div class="layui-input-block">
+                        <input type="text" readonly="readonly" disabled="disabled" id="seatnum1" name="seatnum1" lay-verify="title" autocomplete="off"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">所属房间</label>
+                    <div class="layui-input-block">
+                        <input type="text" readonly="readonly" disabled="disabled" id="room1" name="room1" lay-verify="title" autocomplete="off"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">使用状态</label>
+                    <div class="layui-input-block">
+                        <input type="text" readonly="readonly" disabled="disabled" id="status1" name="status1" lay-verify="title" autocomplete="off"  class="layui-input">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+
+        function clicksearch(){
+
+            var searchContent = $("#searchLike input").val();
+            var searchType = $("#searchLike select").val();
+            // var url = $("#tabledemo").attr("mc-attr-str-url");
+            if (searchContent==""){
+                //没有输入内容，查询所有
+                // $("#tabledemo").attr("mc-attr-str-url","/tables");
+                table.reload('tabledemo', {//重载表格
+                    url: '/tables',
+                    page: {
+                        curr: 1
+                        // 重新从第 1 页开始
+                    }
+                })
+            }else if(searchContent!="" && searchType==0){
+                //内容不空，且按所属房间进行查询
+                // $("#tabledemo").attr("mc-attr-str-url","/tablesByRoom");
+                table.reload('tabledemo', {//重载表格
+                    url: '/tablesByRoom',
+                    where: {
+                        searchContent: searchContent
+                    }, //设定异步数据接口的额外参数
+                    page: {
+                        curr: 1
+                        // 重新从第 1 页开始
+                    }
+                })
+                $("#searchLike input").val("");
+            }else if(searchContent!="" && searchType==1){
+                //内容不空，且按桌台号进行查询
+                // $("#tabledemo").attr("mc-attr-str-url","/tablesByTid");
+                table.reload('tabledemo', {//重载表格
+                    url: '/tablesByTid',
+                    where: {
+                        searchContent: searchContent
+                    }, //设定异步数据接口的额外参数
+                    page: {
+                        curr: 1
+                        // 重新从第 1 页开始
+                    }
+                })
+                $("#searchLike input").val("");
+            }
+
+        }
+        //以下脚本为标签属性转换成layui组件的还原过程
+        //调试:打开浏览器控制台(F12),在代码中某行增加 debugger 即可调试
+        var $ = layui.jquery, laytpl = layui.laytpl, laydate = layui.laydate, form = layui.form, layedit = layui.layedit, slider = layui.slider, element = layui.element, colorpicker = layui.colorpicker, upload = layui.upload, rate = layui.rate, carousel = layui.carousel, table = layui.table, flow = layui.flow;
+        var magicalDragLayuiUtil = {
+            rebuildLayUiControls: function () {
+                var _t = this;
+                //日期
+                $(".magicalcoder-laydate").each(function (idx, item) {
+                    laydate.render(_t.iteratorAttr({
+                        elem: item
+                    }, item));
+                })
+                //富文本
+                $(".magicalcoder-layedit").each(function (idx, item) {
+                    var mcDataId = $(item).attr("id");
+                    if (mcDataId) {
+                        layedit.build(mcDataId, {
+                            height: 300
+                        });
+                    }
+                })
+                //外键
+                $(".magicalcoder-foreign-select2").each(function (idx, item) {
+                    var mcDataId = $(item).attr("id");
+                    if (mcDataId) {
+                        $("#" + mcDataId).select2({
+                            allowClear: true,
+                            width: "150px",
+                            delay: 500,
+                        });
+                    }
+                })
+                //颜色选择器
+                $(".magicalcoder-color-picker").each(function (idx, item) {
+                    colorpicker.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //上传组件
+                $(".magicalcoder-layupload").each(function (idx, item) {
+                    upload.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //滑块
+                $(".magicalcoder-slider").each(function (idx, item) {
+                    slider.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //评分
+                $(".magicalcoder-rate").each(function (idx, item) {
+                    rate.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //轮播
+                $(".layui-carousel").each(function (idx, item) {
+                    carousel.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //流加载
+                $(".magicalcoder-flow").each(function (idx, item) {
+                    flow.load(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //代码
+                $(".magicalcoder-code").each(function (idx, item) {
+                    layui.code(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //弹窗
+                $(".magicalcoder-layer").each(function (idx, item) {
+                    //先隐藏起来
+                    $(this).next().hide();
+                    $(this).click(function () {
+                        var config = _t.iteratorAttr({
+                            elem: $(item)}, item);
+                        var type = config.type;
+                        if (type + '' == 1) {
+                            config.content = $(this).next();
+                            if (!config.content.hasClass("magicalcoder-layer-content")) {
+                                config.content = config.content.find(".magicalcoder-layer-content")
+                            }
+                        }
+                        if (config.btn) {
+                            config.btn = config.btn.split(",")
+                        }
+                        if (config.area) {
+                            config.area = config.area.split(",")
+                        }
+                        layer.open(config)
+                    })
+                })
+                //动态表格 我们单独封装了layui-table的初始化方式 至于数据排序 返回格式 等操作请根据你的具体环境自行封装
+                $(".magicalcoder-table").each(function (idx,
+                    item) {
+                    var cols = [];
+                    //读取列配置
+                    $(this).find(".magicalcoder-table-th").each(function (i, th) {
+                        cols.push(_t.iteratorAttr({
+                            title: $(this).text()}, th));
+                    })
+                    var tableConfig = _t.iteratorAttr({
+                        elem: $(item),
+                        cols: [cols] },
+                        item);
+                    //初始化表格 至于返回的数据格式 您可以根据自己的系统自行改造 这里仅做一个示例 参考js\\data\\list.json
+                    table.render(tableConfig);
+                    //监听工具条crud事件
+                    table.on('tool(crud)', function(obj){
+                        var data = obj.data; //获得当前行数据
+                        var tr=obj.tr//活动当前行tr 的  DOM对象
+                        if(obj.event === 'del'){ //删除
+                            layer.confirm('确定删除吗？',{title:'删除'}, function(index){
+                                //向服务端发送删除指令og
+                                $.post("/deletableline",{tid:data.tid}, function(ret){
+                                    layer.close(index);//关闭弹窗
+                                    table.reload('tabledemo', {//重载表格
+                                        page: {
+                                            curr: 1
+                                            // 重新从第 1 页开始
+                                        }
+                                    })
+                                });
+                                layer.close(index);
+                            });
+                        } else if(obj.event === 'edit'){ //编辑
+                            //捕获页
+                            layer.open({
+                                type: 1 //Page层类型
+                                ,skin: 'layui-layer-molv'
+                                ,area: ['380px', '230px']
+                                ,title: ['编辑餐桌信息','font-size:18px']
+                                ,btn: ['确定', '取消']
+                                ,shadeClose: true
+                                ,shade: 0 //遮罩透明度
+                                ,maxmin: true //允许全屏最小化
+                                ,content:$("#window")  //弹窗路径
+                                ,success:function(layero,index){
+                                    //将已存在数据填到弹出的表单中
+                                    $('#seatnum').val(data.seatnum);
+                                    $('#room').val(data.room);
+                                },yes:function(index,layero){
+                                    //当点击确定时，请求后台。
+                                    $.post("/edittableBytid",{
+                                        //传参数
+                                        tid: data.tid,
+                                        seatnum: $('#seatnum').val(),
+                                        room: $('#room').val(),
+                                        status:data.status
+                                    },function(data){
+                                        //根据后台返回的参数，来进行判断
+                                        if(data>0){
+                                            layer.alert('编辑成功',{icon:1,title:'提示'},function(i){
+                                                layer.close(i);
+                                                layer.close(index);//关闭弹出层
+                                                $("#tableform")[0].reset()//重置form
+                                            })
+                                            table.reload('tabledemo',{//重载表格
+                                                page:{
+                                                    curr:1
+                                                }
+                                            })
+                                        }
+                                    });
+                                }
+                            });
+                        }else if(obj.event === 'detail'){
+                            layer.open({
+                                type: 1 //Page层类型
+                                ,skin: 'layui-layer-molv'
+                                ,area: ['380px', '350px']
+                                ,title: ['查看详细信息','font-size:18px']
+                                ,btn: ['确定']
+                                ,shadeClose: true
+                                ,shade: 0 //遮罩透明度
+                                ,maxmin: true //允许全屏最小化
+                                ,content:$("#window1")  //弹窗路径
+                                ,success:function(layero,index){
+                                    //将已存在数据填到弹出的表单中
+                                    $('#tid1').val(data.tid)
+                                    $('#seatnum1').val(data.seatnum);
+                                    $('#room1').val(data.room);
+                                    if (data.status===0){
+                                        $('#status1').val("未使用");
+                                    }else if (data.status===1){
+                                        $('#status1').val("正在使用");
+                                    }
+
+                                },yes:function(index,layero){
+                                    //当点击确定时，请求后台。
+                                    layer.close(index);//关闭弹出层
+                                }
+                            });
+                        }
+                    });
+                    //监听表格头部工具条事件
+                    table.on('toolbar(crud)', function(obj){
+                    if (obj.event === 'add'){
+                            layer.open({
+                                type: 1 //Page层类型
+                                ,skin: 'layui-layer-molv'
+                                ,area: ['380px', '250px']
+                                ,title: ['添加餐桌','font-size:18px']
+                                ,btn: ['确定', '取消']
+                                ,shadeClose: true
+                                ,shade: 0 //遮罩透明度
+                                ,maxmin: true //允许全屏最小化
+                                ,content:$("#window")  //弹窗路径
+                                ,yes:function(index,layero){
+                                    //当点击确定时，请求后台。
+                                    layer.confirm('信息正确吗？',{title:'确定信息'}, function(index){
+                                        $.post("/addtable",{
+                                            //传参数
+                                            seatnum: $('#seatnum').val(),
+                                            room: $('#room').val(),
+                                        },function(data){
+                                            //根据后台返回的参数，来进行判断
+                                            if(data>0){
+                                                layer.alert('添加成功',{icon:1,title:'提示'},function(i){
+                                                    layer.close(i);
+                                                    layer.close(index);//关闭弹出层
+                                                    $("#tableform")[0].reset()//重置form
+                                                })
+                                                table.reload('tabledemo',{//重载表格
+                                                    page:{
+                                                        curr:1
+                                                    }
+                                                })
+                                            }
+                                            layer.closeAll();
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    });
+                })
+                //部分组件初始化
+                element.init();
+                //表单初始化
+                form.render();
+            },
+            //将标签上的属性 转换成layui函数初始化时的参数名:参数值
+            iteratorAttr: function (renderConfig, dom) {
+                var attrs = dom.attributes;
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = attrs[i];
+                    var name = attr.name;
+                    var value = attr.value;
+                    if (name.indexOf("mc-") === 0) {
+                        name = name.replace("mc-attr-", '');
+                        name = name.replace("mc-event-", '');
+                        if (name.indexOf('str-') === 0) {
+                            name = name.replace('str-', '');
+                        } else if (name.indexOf('bool-') === 0) {
+                            name = name.replace('bool-', '');
+                            value == 'true' || value === '' ? value = true: value = value;
+                            value == 'false' ? value = false: value = value;
+                        } else if (name.indexOf('num-') === 0) {
+                            name = name.replace('num-', '');
+                            if (value !== '' && !isNaN(value)) {
+                                value = parseFloat(value);
+                            }
+                        } else if (name.indexOf('json-') === 0) {
+                            name = name.replace('json-', '');
+                            if (value !== '') {
+                                value = JSON.parse(value);
+                            }
+                        }
+                        renderConfig[this.htmlAttrNameToTuoFeng(name)] = value;
+                    }
+                }
+                return renderConfig;
+            },
+            //user-name -> userName html上的标签名转换成驼峰名称
+            htmlAttrNameToTuoFeng: function (name) {
+                var arr = name.split("-");
+                var newArr = []
+                for (var i = 0; i < arr.length; i++) {
+                    if (i != 0) {
+                        if (arr[i] != '') {
+                            newArr.push(this.firstCharToUpLower(arr[i]));
+                        }
+                    } else {
+                        newArr.push(arr[i]);
+                    }
+                }
+                return newArr.join('');
+            },
+            //首字母大写
+            firstCharToUpLower: function (name) {
+                var arr = name.split("");
+                arr[0] = arr[0].toUpperCase();
+                return arr.join('');
+            },
+        }
+        magicalDragLayuiUtil.rebuildLayUiControls();
+        new McECharts().render();
+    </script>
+</body>
+</html>

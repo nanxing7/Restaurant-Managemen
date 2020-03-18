@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<!--代码由www.magicalcoder.com可视化布局器拖拽生成-->
+<head xmlns:th="http://www.w3.org/1999/xhtml">
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>layui</title>
+  <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-v2.5.5/css/layui.css" />
+  <link href="http://www.magicalcoder.com/magicaldrag/assets/drag/ui/magicalcoder/1.1.0/magicalcoder.css" rel="stylesheet">
+    <script src="https://lib.baomitu.com/json3/3.3.3/json3.min.js"></script>
+  <script src="https://www.layuicdn.com/layui-v2.5.5/layui.all.js"></script>
+  <script src="https://lib.baomitu.com/echarts/4.6.0/echarts.min.js"></script>
+ <script src="http://www.magicalcoder.com/magicaldrag/assets/drag/ui/magicalcoder/1.1.0/magicalcoder.js"></script>
+    <script src="/js/jquery.js"></script>
+    <!--layui的table col操作列自定义的模板 您可以根据自己的实际情况改动-->
+  <script type="text/html" id="tableToolbar">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="update"><i class="layui-icon layui-icon-edit"></i></div>
+    <div class="layui-inline" lay-event="delete"><i class="layui-icon layui-icon-delete"></i></div>
+  </script>
+  <script type="text/html" id="tableColToolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+  </script>
+    <style type="text/css">
+        .hidendiv{width:500px;position: absolute; left: 50px;z-index:1;display: none;background-color: antiquewhite;opacity: 0.7;font-size: 25px;}
+        .hidendiv p{margin: 30px;}
+        img:hover + .hidendiv{display: block;z-index: 3;cursor: pointer;}
+    </style>
+</head>
+<body class="layui-form" style="background-color:#eee;padding: 20px;">
+    <div class="layui-row">
+        <div class="layui-col-xs12">
+            <div class="layui-row">
+                <div class="layui-col-md6" style="width: 33.3333%;">
+                    <input id="searchLikeContent" class="layui-input" type="text" autocomplete="off" />
+                </div>
+                <div class="layui-col-md6" style="width: 7.28362%; height: 64px;">
+                    <a class="layui-btn layui-btn-normal" onclick="searchLike()">搜索</a>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs12">
+            <span class="magical-coder-layer-contaner"><div class="magicalcoder-layer-content">
+                <span class="magical-coder-layer-contaner"><div class="magicalcoder-layer-content">
+                    <div class="layui-row">
+                        <div class="layui-col-md6" style="width: 3.95297%; height: 64px; padding: 10px 0px 0px 10px;">
+                            添加：
+                        </div>
+                        <div class="layui-col-md6" style="width: 3.95297%; height: 64px; padding: 10px 0px 0px 10px;">
+                            <i class="layui-icon layui-icon-add-circle" style="cursor: pointer;" onclick="addFood();"></i>
+                        </div>
+                        <div class="layui-col-md6" style="width: 7.72626%; height: 64px; padding: 10px 0px 0px 10px;">
+                            菜谱类别：
+                        </div>
+                        <div class="layui-col-md6" style="width: 10.761%;">
+                            <select id="typesearch" lay-filter="foodtype"><option value="0">全部</option><option value="1">热菜</option><option value="2">凉菜</option></select>
+                        </div>
+                        <div class="layui-col-md6" style="width: 5.12089%; height: 64px; padding: 10px 0px 0px 10px;">
+                            库存：
+                        </div>
+                        <div class="layui-col-md6" style="width: 10.761%;">
+                            <select id="typesearch2" lay-filter="foodstatus"><option value="0">全部</option><option value="1">有</option><option value="2">无</option></select>
+                        </div>
+                    </div>
+                </div>
+                </span>
+            </div>
+            </span>
+        </div>
+        <div class="layui-col-xs12">
+            <div class="layui-row">
+                <div id="test" th:fragment="test">
+                    <div style="width: 200px;height: 200px;margin-bottom: 40px;position: relative;display: inline-block;margin-left: 25px;" th:each="food:${foods.list}">
+                        <!--                    <img th:src="@{/images/xihongshichaojidan.jpg}" alt="s">-->
+                        <img th:src="${food.image}" th:name="${food.image}" alt="s" style="width: 200px;height: 200px;position: absolute;z-index: 2;cursor: pointer;" onclick="">
+                        <!--                    <div th:if="${food.sort} ne '热菜'">-->
+                        <div class="hidendiv">
+                            <p th:text="'编号：'+${food.fid}" th:name="${food.fid}">fid</p>
+                            <p th:text="'菜名：'+${food.name}" th:name="${food.name}">name</p>
+                            <p th:text="'价格：'+${food.price}" th:name="${food.price}">price</p>
+                            <p th:text="'食效：'+${food.result}" th:name="${food.result}">result</p>
+                            <p th:text="'种类：'+${food.sort}" th:name="${food.sort}">sort</p>
+                            <p th:text="'库存：'+${food.status}" th:name="${food.status}">status</p>
+                        </div>
+                        <i class="deletefood layui-icon layui-icon-close" style="position: absolute;z-index: 2;left: 200px;cursor: pointer;"></i>
+                        <span th:text="${food.fid}" style="position: absolute;z-index: 2;top: 210px;left: 20px;"></span><span th:text="${food.name}" style="position: absolute;z-index:2;top: 207px;left:50px;"></span>
+
+                    </div>
+                    <div id="hidencount" th:name="${count}" style="display: none;"></div>
+
+                </div>
+                <div id="demo7" style="margin-left: 400px;"></div>
+            </div>
+        </div>
+    </div>
+    <!--        弹出层form1  (div隐藏)-->
+    <div class="site-text" style="margin: 5%; display: none" id="window"  target="test123">
+        <form class="layui-form" id="tableform" method="post" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜品名</label>
+                <div class="layui-input-block">
+                    <input type="text" id="name1" name="name1" lay-verify="title" autocomplete="off" placeholder="请输入菜品名字" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">价格</label>
+                <div class="layui-input-block">
+                    <input type="text" id="price" name="price" lay-verify="title" autocomplete="off" placeholder="请输入价格" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">种类</label>
+                <div class="layui-input-block">
+                    <select id="sort" name="sort" ><option value="0">热菜</option><option value="1">凉菜</option></select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">库存</label>
+                <div class="layui-input-block">
+                    <select id="status" name="status" ><option value="0">有</option><option value="1">无</option></select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">食效（限250字）</label>
+                <div class="layui-input-block">
+                    <textarea id="result" name="result" class="layui-textarea" placeholder="请输入食效内容"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片</label>
+                <div class="layui-input-block">
+                    <div class="layui-progress layui-progress-big" lay-filter="demo" lay-showPercent="true">
+                        <div class="layui-progress-bar" lay-percent="0%"></div>
+                    </div>
+                    <button id="image" name="image" class="magicalcoder-layupload layui-btn" type="button" mc-attr-bool-auto="true">上传图片</button>
+
+                    <span id="uploadResult" style="color: red; margin-left: 10px;"></span>
+                    <input type="text" id="imgsrc" name="imgsrc" style="display:none">
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--        弹出层form1  (div隐藏)-->
+    <!--        弹出层form2  (div隐藏)-->
+    <div class="site-text" style="margin: 5%; display: none" id="window2"  target="test123">
+        <form class="layui-form" id="tableform2" method="post" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜品名</label>
+                <div class="layui-input-block">
+                    <input type="text" id="name2" name="name2" lay-verify="title" autocomplete="off" placeholder="请输入菜品名字" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">价格</label>
+                <div class="layui-input-block">
+                    <input type="text" id="price2" name="price2" lay-verify="title" autocomplete="off" placeholder="请输入价格" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">种类</label>
+                <div class="layui-input-block">
+                    <select id="sort2" name="sort2" ><option value="0">热菜</option><option value="1">凉菜</option></select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">库存</label>
+                <div class="layui-input-block">
+                    <select id="status2" name="status2" ><option value="0">有</option><option value="1">无</option></select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">食效（限250字）</label>
+                <div class="layui-input-block">
+                    <textarea id="result2" name="result2" class="layui-textarea" placeholder="请输入食效内容"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片</label>
+                <div class="layui-input-block">
+                    <div class="layui-progress layui-progress-big" lay-filter="demo" lay-showPercent="true">
+                        <div class="layui-progress-bar" lay-percent="0%"></div>
+                    </div>
+                    <button id="image2" name="image2" class="magicalcoder-layupload layui-btn" type="button" mc-attr-bool-auto="true">上传图片</button>
+
+                    <span id="uploadResult2" style="color: red; margin-left: 10px;"></span>
+                    <input type="text" id="imgsrc2" name="imgsrc2" style="display:none">
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--        弹出层form2  (div隐藏)-->
+    <script>
+
+//     ajax  post自动请求后台数据（查询，顺带加上更新功能）
+        $(function(){
+            $.post("/foods",function(result,status){
+                // $("span").html(result);
+                // alert(JSON.stringify(result));
+                //分页
+                $("#test").html(result);
+                layui.use('laypage', function(){
+                    var laypage = layui.laypage;
+                    // alert(result.count);
+                    //执行一个laypage实例
+                    $("#test").html(result);
+                    laypage.render({
+                        elem: 'demo7' //注意，这里的 demo7 是 ID，不用加 # 号
+                        ,count: $("#hidencount").attr("name") //数据总数，从服务端得到
+                        ,layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip']
+                        ,limit:12
+                        ,jump: function(obj, first){
+                            //obj包含了当前分页的所有参数，比如：
+                            console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                            console.log(obj.limit); //得到每页显示的条数
+                            $.post("/foods",{page:obj.curr},function(result,status){
+                                $("#test").html(result);
+//***************************************更新******************************************
+                                $('img').click(function updatefood(){
+                                    var defaultimgsrc=$(this).attr("name");
+                                    var update_fid=$($($(this).next()).children()[0]).attr("name");
+                                    var update_name1=$($($(this).next()).children()[1]).attr("name");
+                                    var update_price=$($($(this).next()).children()[2]).attr("name");
+                                    var update_result=$($($(this).next()).children()[3]).attr("name");
+                                    var update_sort=$($($(this).next()).children()[4]).attr("name");
+                                    if(update_sort=='热菜'){
+                                        update_sort='0';
+                                    }else if(update_sort=='凉菜'){
+                                        update_sort='1';
+                                    }
+                                    var update_status=$($($(this).next()).children()[5]).attr("name");
+                                    if(update_status=='有'){
+                                        update_status='0';
+                                    }else if(update_status=='无'){
+                                        update_status='1';
+                                    }
+
+                                    layer.open({
+                                        type: 1 //Page层类型
+                                        ,skin: 'layui-layer-molv'
+                                        ,area: ['380px', '340px']
+                                        ,title: ['编辑信息','font-size:18px']
+                                        ,btn: ['确定', '取消']
+                                        ,shadeClose: true
+                                        ,shade: 0 //遮罩透明度
+                                        ,maxmin: true //允许全屏最小化
+                                        ,content:$("#window")  //弹窗路径
+                                        ,success:function(layero,index){
+                                            //将已存在数据填到弹出的表单中
+                                            $('#name1').val(update_name1);
+                                            $('#price').val(update_price);
+                                            $('#sort').val(update_sort);
+                                            $('#status').val(update_status);
+                                            //更新select选择值
+                                            layui.form.render('select');
+                                            $('#result').val(update_result);
+                                        },yes:function(index,layero){
+                                            //当点击确定时，请求后台。
+                                            //处理没有修改图片的情况
+                                            var update_imgsrc;
+                                            if($('#imgsrc').val()==''){
+                                                update_imgsrc=defaultimgsrc;
+                                            }else {
+                                                update_imgsrc=$('#imgsrc').val();
+                                            }
+                                            $.post("/editfoodByfid",{
+                                                //传参数
+                                                fid: update_fid,
+                                                name1: $('#name1').val(),
+                                                price: $('#price').val(),
+                                                sort: $('#sort').val(),
+                                                status: $('#status').val(),
+                                                result:$('#result').val(),
+                                                imgsrc:update_imgsrc
+                                            },function(data){
+                                                //根据后台返回的参数，来进行判断
+                                                if(data>0){
+                                                    layer.alert('编辑成功',{icon:1,title:'提示'},function(i){
+                                                        layer.close(i);
+                                                        layer.close(index);//关闭弹出层
+                                                        $("#tableform")[0].reset();//重置form
+                                                        $("#tableform2")[0].reset();
+                                                    })
+                                                    $.post("/foods",{page:obj.curr},function(result){
+
+                                                        $("#test").html(result);
+                                                        $("#tableform")[0].reset();//重置form
+                                                        $("#tableform2")[0].reset();
+                                                        //递归回调自己
+                                                        $('img').click(updatefood);
+                                                    });
+                                                }
+                                            });
+                                        }
+                                        ,end:function () {
+                                            $("#tableform2")[0].reset();//重置form
+                                            $("#tableform")[0].reset();
+                                        }
+                                    });
+
+                                });
+//***************************************更新******************************************
+
+//***************************************删除******************************************
+
+                                $('.deletefood').click(function () {
+                                    var delete_fid=$($($(this).prev()).children()[0]).attr("name");
+                                    layer.confirm('确定删除吗？',{title:'删除'}, function(index){
+                                        //向服务端发送删除指令og
+                                        $.post("/delefood",{fid:delete_fid}, function(ret){
+                                            layer.close(index);//关闭弹窗
+                                            $.post("/foods",{page:obj.curr},function(result,status){
+                                                // $("span").html(result);
+                                                // alert(JSON.stringify(result));
+                                                $("#test").html(result);
+                                            });
+                                        });
+                                        layer.close(index);
+                                    });
+                                });
+//***************************************删除******************************************
+                            });
+                        }
+                    });
+                });
+            });
+        });
+// 添加菜品信息弹框
+    function addFood(){
+        layer.open({
+            type: 1 //Page层类型
+            ,skin: 'layui-layer-molv'
+            ,area: ['400px', '400px']
+            ,title: ['添加菜品','font-size:18px']
+            ,btn: ['确定', '取消']
+            ,shadeClose: true
+            ,shade: 0 //遮罩透明度
+            ,maxmin: true //允许全屏最小化
+            ,content:$("#window2")  //弹窗路径
+            ,yes:function(index,layero){
+                //当点击确定时，请求后台。
+                layer.confirm('信息正确吗？',{title:'确定信息'}, function(index){
+                    $.post("/addfood",{
+                        //传参数
+                        name1: $('#name2').val(),
+                        price: $('#price2').val(),
+                        sort: $('#sort2').val(),
+                        status: $('#status2').val(),
+                        result:$('#result2').val(),
+                        imgsrc:$('#imgsrc2').val()
+                    },function(data){
+                        //根据后台返回的参数，来进行判断
+                        if(data>0){
+                            layer.alert('添加成功',{icon:1,title:'提示'},function(i){
+                                layer.close(i);
+                                layer.close(index);//关闭弹出层
+                                $("#tableform2")[0].reset();//重置form
+                                $("#tableform")[0].reset();
+                            })
+                            $.post("/foods",function(result,status){
+                                // $("span").html(result);
+                                // alert(JSON.stringify(result));
+                                $("#tableform2")[0].reset();//重置form
+                                $("#tableform")[0].reset();
+                                $("#test").html(result);
+                            });
+                        }
+                        layer.closeAll();
+                    });
+                });
+            }
+            ,end:function () {
+                $("#tableform2")[0].reset();//重置form
+                $("#tableform")[0].reset();
+            }
+        });
+    }
+//    分类
+$(document).ready(function(){
+    // $(".layui-col-md6>select").on('click',function (){
+    //     alert(22);
+    // });
+    var form = layui.form, layer = layui.layer;
+
+    //按种类分类
+    form.on('select(foodtype)', function(data){
+        var optionvalue=data.value;
+        $.post("/foodsBySort",{sort:optionvalue},function (result) {
+            $("#test").html(result);
+
+            layui.use('laypage', function(){
+                var laypage = layui.laypage;
+                // alert(result.count);
+                //执行一个laypage实例
+                $("#test").html(result);
+                laypage.render({
+                    elem: 'demo7' //注意，这里的 demo7 是 ID，不用加 # 号
+                    ,count: $("#hidencount").attr("name") //数据总数，从服务端得到
+                    ,layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip']
+                    ,limit:12
+                    ,jump: function(obj, first){
+                        //obj包含了当前分页的所有参数，比如：
+                        console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                        console.log(obj.limit); //得到每页显示的条数
+                        $.post("/foodsBySort",{page:obj.curr,sort:optionvalue},function(result,status){
+                            $("#test").html(result);
+//***************************************更新******************************************
+                            $('img').click(function updatefood(){
+                                var defaultimgsrc=$(this).attr("name");
+                                var update_fid=$($($(this).next()).children()[0]).attr("name");
+                                var update_name1=$($($(this).next()).children()[1]).attr("name");
+                                var update_price=$($($(this).next()).children()[2]).attr("name");
+                                var update_result=$($($(this).next()).children()[3]).attr("name");
+                                var update_sort=$($($(this).next()).children()[4]).attr("name");
+                                if(update_sort=='热菜'){
+                                    update_sort='0';
+                                }else if(update_sort=='凉菜'){
+                                    update_sort='1';
+                                }
+                                var update_status=$($($(this).next()).children()[5]).attr("name");
+                                if(update_status=='有'){
+                                    update_status='0';
+                                }else if(update_status=='无'){
+                                    update_status='1';
+                                }
+
+                                layer.open({
+                                    type: 1 //Page层类型
+                                    ,skin: 'layui-layer-molv'
+                                    ,area: ['380px', '340px']
+                                    ,title: ['编辑信息','font-size:18px']
+                                    ,btn: ['确定', '取消']
+                                    ,shadeClose: true
+                                    ,shade: 0 //遮罩透明度
+                                    ,maxmin: true //允许全屏最小化
+                                    ,content:$("#window")  //弹窗路径
+                                    ,success:function(layero,index){
+                                        //将已存在数据填到弹出的表单中
+                                        $('#name1').val(update_name1);
+                                        $('#price').val(update_price);
+                                        $('#sort').val(update_sort);
+                                        $('#status').val(update_status);
+                                        //更新select选择值
+                                        layui.form.render('select');
+                                        $('#result').val(update_result);
+                                    },yes:function(index,layero){
+                                        //当点击确定时，请求后台。
+                                        //处理没有修改图片的情况
+                                        var update_imgsrc;
+                                        if($('#imgsrc').val()==''){
+                                            update_imgsrc=defaultimgsrc;
+                                        }else {
+                                            update_imgsrc=$('#imgsrc').val();
+                                        }
+                                        $.post("/editfoodByfid",{
+                                            //传参数
+                                            fid: update_fid,
+                                            name1: $('#name1').val(),
+                                            price: $('#price').val(),
+                                            sort: $('#sort').val(),
+                                            status: $('#status').val(),
+                                            result:$('#result').val(),
+                                            imgsrc:update_imgsrc
+                                        },function(data){
+                                            //根据后台返回的参数，来进行判断
+                                            if(data>0){
+                                                layer.alert('编辑成功',{icon:1,title:'提示'},function(i){
+                                                    layer.close(i);
+                                                    layer.close(index);//关闭弹出层
+                                                    $("#tableform")[0].reset();//重置form
+                                                    $("#tableform2")[0].reset();
+                                                })
+                                                $.post("/foods",{page:obj.curr},function(result){
+
+                                                    $("#test").html(result);
+                                                    $("#tableform")[0].reset();//重置form
+                                                    $("#tableform2")[0].reset();
+                                                    //递归回调自己
+                                                    $('img').click(updatefood);
+                                                });
+                                            }
+                                        });
+                                    }
+                                    ,end:function () {
+                                        $("#tableform2")[0].reset();//重置form
+                                        $("#tableform")[0].reset();
+                                    }
+                                });
+
+                            });
+//***************************************更新******************************************
+
+//***************************************删除******************************************
+
+                            $('.deletefood').click(function () {
+                                var delete_fid=$($($(this).prev()).children()[0]).attr("name");
+                                layer.confirm('确定删除吗？',{title:'删除'}, function(index){
+                                    //向服务端发送删除指令og
+                                    $.post("/delefood",{fid:delete_fid}, function(ret){
+                                        layer.close(index);//关闭弹窗
+                                        $.post("/foods",{page:obj.curr},function(result,status){
+                                            // $("span").html(result);
+                                            // alert(JSON.stringify(result));
+                                            $("#test").html(result);
+                                        });
+                                    });
+                                    layer.close(index);
+                                });
+                            });
+//***************************************删除******************************************
+                        });
+                    }
+                });
+            });
+        })
+    });
+    //按库存分类
+    form.on('select(foodstatus)', function(data){
+        var optionvalue=data.value;
+        $.post("/foodsByStatus",{status:optionvalue},function (result) {
+            $("#test").html(result);
+
+            layui.use('laypage', function(){
+                var laypage = layui.laypage;
+                // alert(result.count);
+                //执行一个laypage实例
+                $("#test").html(result);
+                laypage.render({
+                    elem: 'demo7' //注意，这里的 demo7 是 ID，不用加 # 号
+                    ,count: $("#hidencount").attr("name") //数据总数，从服务端得到
+                    ,layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip']
+                    ,limit:12
+                    ,jump: function(obj, first){
+                        //obj包含了当前分页的所有参数，比如：
+                        console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                        console.log(obj.limit); //得到每页显示的条数
+                        $.post("/foodsByStatus",{page:obj.curr,status:optionvalue},function(result,status){
+                            $("#test").html(result);
+//***************************************更新******************************************
+                            $('img').click(function updatefood(){
+                                var defaultimgsrc=$(this).attr("name");
+                                var update_fid=$($($(this).next()).children()[0]).attr("name");
+                                var update_name1=$($($(this).next()).children()[1]).attr("name");
+                                var update_price=$($($(this).next()).children()[2]).attr("name");
+                                var update_result=$($($(this).next()).children()[3]).attr("name");
+                                var update_sort=$($($(this).next()).children()[4]).attr("name");
+                                if(update_sort=='热菜'){
+                                    update_sort='0';
+                                }else if(update_sort=='凉菜'){
+                                    update_sort='1';
+                                }
+                                var update_status=$($($(this).next()).children()[5]).attr("name");
+                                if(update_status=='有'){
+                                    update_status='0';
+                                }else if(update_status=='无'){
+                                    update_status='1';
+                                }
+
+                                layer.open({
+                                    type: 1 //Page层类型
+                                    ,skin: 'layui-layer-molv'
+                                    ,area: ['380px', '340px']
+                                    ,title: ['编辑信息','font-size:18px']
+                                    ,btn: ['确定', '取消']
+                                    ,shadeClose: true
+                                    ,shade: 0 //遮罩透明度
+                                    ,maxmin: true //允许全屏最小化
+                                    ,content:$("#window")  //弹窗路径
+                                    ,success:function(layero,index){
+                                        //将已存在数据填到弹出的表单中
+                                        $('#name1').val(update_name1);
+                                        $('#price').val(update_price);
+                                        $('#sort').val(update_sort);
+                                        $('#status').val(update_status);
+                                        //更新select选择值
+                                        layui.form.render('select');
+                                        $('#result').val(update_result);
+                                    },yes:function(index,layero){
+                                        //当点击确定时，请求后台。
+                                        //处理没有修改图片的情况
+                                        var update_imgsrc;
+                                        if($('#imgsrc').val()==''){
+                                            update_imgsrc=defaultimgsrc;
+                                        }else {
+                                            update_imgsrc=$('#imgsrc').val();
+                                        }
+                                        $.post("/editfoodByfid",{
+                                            //传参数
+                                            fid: update_fid,
+                                            name1: $('#name1').val(),
+                                            price: $('#price').val(),
+                                            sort: $('#sort').val(),
+                                            status: $('#status').val(),
+                                            result:$('#result').val(),
+                                            imgsrc:update_imgsrc
+                                        },function(data){
+                                            //根据后台返回的参数，来进行判断
+                                            if(data>0){
+                                                layer.alert('编辑成功',{icon:1,title:'提示'},function(i){
+                                                    layer.close(i);
+                                                    layer.close(index);//关闭弹出层
+                                                    $("#tableform")[0].reset();//重置form
+                                                    $("#tableform2")[0].reset();
+                                                })
+                                                $.post("/foods",{page:obj.curr},function(result){
+
+                                                    $("#test").html(result);
+                                                    $("#tableform")[0].reset();//重置form
+                                                    $("#tableform2")[0].reset();
+                                                    //递归回调自己
+                                                    $('img').click(updatefood);
+                                                });
+                                            }
+                                        });
+                                    }
+                                    ,end:function () {
+                                        $("#tableform2")[0].reset();//重置form
+                                        $("#tableform")[0].reset();
+                                    }
+                                });
+
+                            });
+//***************************************更新******************************************
+
+//***************************************删除******************************************
+
+                            $('.deletefood').click(function () {
+                                var delete_fid=$($($(this).prev()).children()[0]).attr("name");
+                                layer.confirm('确定删除吗？',{title:'删除'}, function(index){
+                                    //向服务端发送删除指令og
+                                    $.post("/delefood",{fid:delete_fid}, function(ret){
+                                        layer.close(index);//关闭弹窗
+                                        $.post("/foods",{page:obj.curr},function(result,status){
+                                            // $("span").html(result);
+                                            // alert(JSON.stringify(result));
+                                            $("#test").html(result);
+                                        });
+                                    });
+                                    layer.close(index);
+                                });
+                            });
+//***************************************删除******************************************
+                        });
+                    }
+                });
+            });
+        })
+    })
+});
+//按名字模糊搜寻
+function searchLike() {
+    var likeContent=$("#searchLikeContent").val();
+    $.post("/foodsBySearchLike",{likeContent:likeContent},function (result) {
+        $("#test").html(result);
+
+        layui.use('laypage', function(){
+            var laypage = layui.laypage;
+            // alert(result.count);
+            //执行一个laypage实例
+            $("#test").html(result);
+            laypage.render({
+                elem: 'demo7' //注意，这里的 demo7 是 ID，不用加 # 号
+                ,count: $("#hidencount").attr("name") //数据总数，从服务端得到
+                ,layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip']
+                ,limit:12
+                ,jump: function(obj, first){
+                    //obj包含了当前分页的所有参数，比如：
+                    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                    console.log(obj.limit); //得到每页显示的条数
+                    $.post("/foodsBySearchLike",{page:obj.curr,likeContent:likeContent},function(result,status){
+                        $("#test").html(result);
+//***************************************更新******************************************
+                        $('img').click(function updatefood(){
+                            var defaultimgsrc=$(this).attr("name");
+                            var update_fid=$($($(this).next()).children()[0]).attr("name");
+                            var update_name1=$($($(this).next()).children()[1]).attr("name");
+                            var update_price=$($($(this).next()).children()[2]).attr("name");
+                            var update_result=$($($(this).next()).children()[3]).attr("name");
+                            var update_sort=$($($(this).next()).children()[4]).attr("name");
+                            if(update_sort=='热菜'){
+                                update_sort='0';
+                            }else if(update_sort=='凉菜'){
+                                update_sort='1';
+                            }
+                            var update_status=$($($(this).next()).children()[5]).attr("name");
+                            if(update_status=='有'){
+                                update_status='0';
+                            }else if(update_status=='无'){
+                                update_status='1';
+                            }
+
+                            layer.open({
+                                type: 1 //Page层类型
+                                ,skin: 'layui-layer-molv'
+                                ,area: ['380px', '340px']
+                                ,title: ['编辑信息','font-size:18px']
+                                ,btn: ['确定', '取消']
+                                ,shadeClose: true
+                                ,shade: 0 //遮罩透明度
+                                ,maxmin: true //允许全屏最小化
+                                ,content:$("#window")  //弹窗路径
+                                ,success:function(layero,index){
+                                    //将已存在数据填到弹出的表单中
+                                    $('#name1').val(update_name1);
+                                    $('#price').val(update_price);
+                                    $('#sort').val(update_sort);
+                                    $('#status').val(update_status);
+                                    //更新select选择值
+                                    layui.form.render('select');
+                                    $('#result').val(update_result);
+                                },yes:function(index,layero){
+                                    //当点击确定时，请求后台。
+                                    //处理没有修改图片的情况
+                                    var update_imgsrc;
+                                    if($('#imgsrc').val()==''){
+                                        update_imgsrc=defaultimgsrc;
+                                    }else {
+                                        update_imgsrc=$('#imgsrc').val();
+                                    }
+                                    $.post("/editfoodByfid",{
+                                        //传参数
+                                        fid: update_fid,
+                                        name1: $('#name1').val(),
+                                        price: $('#price').val(),
+                                        sort: $('#sort').val(),
+                                        status: $('#status').val(),
+                                        result:$('#result').val(),
+                                        imgsrc:update_imgsrc
+                                    },function(data){
+                                        //根据后台返回的参数，来进行判断
+                                        if(data>0){
+                                            layer.alert('编辑成功',{icon:1,title:'提示'},function(i){
+                                                layer.close(i);
+                                                layer.close(index);//关闭弹出层
+                                                $("#tableform")[0].reset();//重置form
+                                                $("#tableform2")[0].reset();
+                                            })
+                                            $.post("/foods",{page:obj.curr},function(result){
+
+                                                $("#test").html(result);
+                                                $("#tableform")[0].reset();//重置form
+                                                $("#tableform2")[0].reset();
+                                                //递归回调自己
+                                                $('img').click(updatefood);
+                                            });
+                                        }
+                                    });
+                                }
+                                ,end:function () {
+                                    $("#tableform2")[0].reset();//重置form
+                                    $("#tableform")[0].reset();
+                                }
+                            });
+
+                        });
+//***************************************更新******************************************
+
+//***************************************删除******************************************
+
+                        $('.deletefood').click(function () {
+                            var delete_fid=$($($(this).prev()).children()[0]).attr("name");
+                            layer.confirm('确定删除吗？',{title:'删除'}, function(index){
+                                //向服务端发送删除指令og
+                                $.post("/delefood",{fid:delete_fid}, function(ret){
+                                    layer.close(index);//关闭弹窗
+                                    $.post("/foods",{page:obj.curr},function(result,status){
+                                        // $("span").html(result);
+                                        // alert(JSON.stringify(result));
+                                        $("#test").html(result);
+                                    });
+                                });
+                                layer.close(index);
+                            });
+                        });
+//***************************************删除******************************************
+                    });
+                }
+            });
+        });
+    });
+    $("#searchLikeContent").val("");
+}
+
+
+//以下脚本为标签属性转换成layui组件的还原过程
+//调试:打开浏览器控制台(F12),在代码中某行增加 debugger 即可调试
+        var $ = layui.jquery, laytpl = layui.laytpl, laydate = layui.laydate, form = layui.form, layedit = layui.layedit, slider = layui.slider, element = layui.element, colorpicker = layui.colorpicker, upload = layui.upload, rate = layui.rate, carousel = layui.carousel, table = layui.table, flow = layui.flow;
+        var magicalDragLayuiUtil = {
+            rebuildLayUiControls: function () {
+                var _t = this;
+                //日期
+                $(".magicalcoder-laydate").each(function (idx, item) {
+                    laydate.render(_t.iteratorAttr({
+                        elem: item
+                    }, item));
+                })
+                //富文本
+                $(".magicalcoder-layedit").each(function (idx, item) {
+                    var mcDataId = $(item).attr("id");
+                    if (mcDataId) {
+                        layedit.build(mcDataId, {
+                            height: 300
+                        });
+                    }
+                })
+                //外键
+                $(".magicalcoder-foreign-select2").each(function (idx, item) {
+                    var mcDataId = $(item).attr("id");
+                    if (mcDataId) {
+                        $("#" + mcDataId).select2({
+                            allowClear: true,
+                            width: "150px",
+                            delay: 500,
+                        });
+                    }
+                })
+                //颜色选择器
+                $(".magicalcoder-color-picker").each(function (idx, item) {
+                    colorpicker.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //上传组件
+                $(".magicalcoder-layupload").each(function (idx, item) {
+                    upload.render(_t.iteratorAttr({
+                        elem: $(item)
+                        ,url: '/upload/'
+                        ,done: function(res, index, upload){
+                            //假设code=0代表上传成功
+                            if(res.code == 0){
+                                //do something （比如将res返回的图片链接保存到表单的隐藏域）
+                                $("#imgsrc").val(res.imgsrc);
+                                $("#uploadResult").html(res.uploadResult);
+                            }else {
+                                $("#uploadResult").html(res.uploadResult);
+                            }
+
+                            //文件保存失败
+                            //do something
+                        }
+                        ,progress: function(n, elem){
+                            var percent = n + '%' //获取进度百分比
+                            element.progress('demo', percent); //可配合 layui 进度条元素使用
+
+                            //以下系 layui 2.5.6 新增
+                            // console.log(elem); //得到当前触发的元素 DOM 对象。可通过该元素定义的属性值匹配到对应的进度条。
+                        }}, item));
+                })
+                //滑块
+                $(".magicalcoder-slider").each(function (idx, item) {
+                    slider.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //评分
+                $(".magicalcoder-rate").each(function (idx, item) {
+                    rate.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //轮播
+                $(".layui-carousel").each(function (idx, item) {
+                    carousel.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //流加载
+                $(".magicalcoder-flow").each(function (idx, item) {
+                    flow.load(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //代码
+                $(".magicalcoder-code").each(function (idx, item) {
+                    layui.code(_t.iteratorAttr({
+                        elem: $(item)},item));
+                })
+                //弹窗
+                $(".magicalcoder-layer").each(function (idx, item) {
+                    //先隐藏起来
+                    $(this).next().hide();
+                    $(this).click(function () {
+                        var config = _t.iteratorAttr({
+                            elem: $(item)}, item);
+                        var type = config.type;
+                        if (type + '' == 1) {
+                            config.content = $(this).next();
+                            if (!config.content.hasClass("magicalcoder-layer-content")) {
+                                config.content = config.content.find(".magicalcoder-layer-content")
+                            }
+                        }
+                        if (config.btn) {
+                            config.btn = config.btn.split(",")
+                        }
+                        if (config.area) {
+                            config.area = config.area.split(",")
+                        }
+                        layer.open(config)
+                    })
+                })
+                //动态表格 我们单独封装了layui-table的初始化方式 至于数据排序 返回格式 等操作请根据你的具体环境自行封装
+                $(".magicalcoder-table").each(function (idx,
+                    item) {
+                    var cols = [];
+                    //读取列配置
+                    $(this).find(".magicalcoder-table-th").each(function (i, th) {
+                        cols.push(_t.iteratorAttr({
+                            title: $(this).text()}, th));
+                    })
+                    var tableConfig = _t.iteratorAttr({
+                        elem: $(item),
+                        cols: [cols]},
+                        item);
+                    //初始化表格 至于返回的数据格式 您可以根据自己的系统自行改造 这里仅做一个示例 参考js\\data\\list.json
+                    table.render(tableConfig);
+                })
+                //部分组件初始化
+                element.init();
+                //表单初始化
+                form.render();
+            },
+            //将标签上的属性 转换成layui函数初始化时的参数名:参数值
+            iteratorAttr: function (renderConfig, dom) {
+                var attrs = dom.attributes;
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = attrs[i];
+                    var name = attr.name;
+                    var value = attr.value;
+                    if (name.indexOf("mc-") === 0) {
+                        name = name.replace("mc-attr-", '');
+                        name = name.replace("mc-event-", '');
+                        if (name.indexOf('str-') === 0) {
+                            name = name.replace('str-', '');
+                        } else if (name.indexOf('bool-') === 0) {
+                            name = name.replace('bool-', '');
+                            value == 'true' || value === '' ? value = true: value = value;
+                            value == 'false' ? value = false: value = value;
+                        } else if (name.indexOf('num-') === 0) {
+                            name = name.replace('num-', '');
+                            if (value !== '' && !isNaN(value)) {
+                                value = parseFloat(value);
+                            }
+                        } else if (name.indexOf('json-') === 0) {
+                            name = name.replace('json-', '');
+                            if (value !== '') {
+                                value = JSON.parse(value);
+                            }
+                        }
+                        renderConfig[this.htmlAttrNameToTuoFeng(name)] = value;
+                    }
+                }
+                return renderConfig;
+            },
+            //user-name -> userName html上的标签名转换成驼峰名称
+            htmlAttrNameToTuoFeng: function (name) {
+                var arr = name.split("-");
+                var newArr = []
+                for (var i = 0; i < arr.length; i++) {
+                    if (i != 0) {
+                        if (arr[i] != '') {
+                            newArr.push(this.firstCharToUpLower(arr[i]));
+                        }
+                    } else {
+                        newArr.push(arr[i]);
+                    }
+                }
+                return newArr.join('');
+            },
+            //首字母大写
+            firstCharToUpLower: function (name) {
+                var arr = name.split("");
+                arr[0] = arr[0].toUpperCase();
+                return arr.join('');
+            },
+        }
+        magicalDragLayuiUtil.rebuildLayUiControls();
+        new McECharts().render();
+    </script>
+</body>
+</html>

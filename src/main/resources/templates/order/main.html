@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<!--代码由www.magicalcoder.com可视化布局器拖拽生成-->
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>layui</title>
+  <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-v2.5.5/css/layui.css" />
+  <link href="http://www.magicalcoder.com/magicaldrag/assets/drag/ui/magicalcoder/1.1.0/magicalcoder.css" rel="stylesheet">
+    <script src="https://lib.baomitu.com/json3/3.3.3/json3.min.js"></script>
+  <script src="https://www.layuicdn.com/layui-v2.5.5/layui.all.js"></script>
+  <script src="https://lib.baomitu.com/echarts/4.6.0/echarts.min.js"></script>
+ <script src="http://www.magicalcoder.com/magicaldrag/assets/drag/ui/magicalcoder/1.1.0/magicalcoder.js"></script>
+    <script src="/js/jquery.js"></script>
+<!--layui的table col操作列自定义的模板 您可以根据自己的实际情况改动-->
+  <script type="text/html" id="tableToolbar">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="update"><i class="layui-icon layui-icon-edit"></i></div>
+    <div class="layui-inline" lay-event="delete"><i class="layui-icon layui-icon-delete"></i></div>
+  </script>
+  <script type="text/html" id="tableColToolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+  </script>
+    <style>
+        .hidendiv{width:500px;position: absolute; left: 50px;z-index:1;display: none;background-color: antiquewhite;opacity: 0.7;font-size: 15px;}
+        .hidendiv p{margin: 10px;}
+    </style>
+</head>
+<body class="layui-form" style="background-color:#eee;padding: 20px;">
+    <div class="layui-row">
+        <div class="layui-col-xs12">
+            <div class="layui-row">
+                <div class="layui-col-md6" style="width: 10.3967%; height: 63px;">
+                    使用状态：
+                </div>
+                <div class="layui-col-md6" style="width: 14.8959%; height: 61px;">
+                    <select lay-filter='tablestatus'><option value="0">全部</option><option value="1">未使用</option><option value="2">已使用</option></select>
+                </div>
+                <span style="margin-left: 50px;"><strong style="color: #808000;">浅绿色</strong>代表空闲，<strong style="color: #470024;">酒红色</strong>代表已使用</span>
+            </div>
+        </div>
+        <div class="layui-col-xs12">
+            <div class="layui-row">
+                <div id="test" th:fragment="test">
+                    <div class="xunhuandiv" style="cursor:pointer;width: 200px;height: 200px;margin-bottom: 40px;position: relative;display: inline-block;margin-left: 25px;background-color:white;" th:each="table:${tables.list}">
+                        <p th:name="${table.status}" style="display: none;">
+                        <p th:text="${table.tid}" th:name="${table.tid}" style="margin:30px 0 0 20px;">
+                            1
+                        </p>
+                        <h1 th:text="${table.room}" th:name="${table.room}" style="margin:30px 0 0 45px;">
+                            吉祥厅
+                        </h1>
+                        <h2 th:text="${table.seatnum}+'人桌'" th:name="${table.seatnum}" style="margin:10px 0 0 55px;">
+                            10人桌
+                        </h2>
+                        <div class="hidendiv">
+                            <div>1</div>
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hidencount" style="display: none;" th:name="${count}"></div>
+                </div>
+                <div id="demo7" style="margin-left: 400px;"></div>
+            </div>
+        </div>
+    </div>
+<!--    隐藏新增表单-->
+    <div class="site-text" style=" display: none" id="window"  target="test123">
+        <form class="layui-form" id="tableform" method="post">
+            <!--    左-->
+            <div style="display: inline-block;height:460px; position:absolute;border-right:3px solid darkolivegreen;width: 600px; padding-right: 20px; ">
+                <!--    菜单号，jQuery自动生成-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单号</label>
+                    <div class="layui-input-block">
+                        <input id="oid" type="text" name="oid" value="" readonly="readonly" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    桌台号，从当前点击的桌子获取-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">桌台号</label>
+                    <div class="layui-input-block">
+                        <input id="tid" type="text" name="tid" value="" readonly="readonly" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    顾客人数 number，需要手动输入-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">顾客人数*</label>
+                    <div class="layui-input-block">
+                        <input id="number" type="text" name="number" placeholder="请输入顾客人数" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    负责员工号，下拉列表-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">负责员工号*</label>
+                    <div class="layui-input-block">
+                        <select id="sid" name="sid" lay-filter="aihao">
+                        </select>
+                    </div>
+                </div>
+                <!--    下单时间，不显示，获取提交订单时的时间-->
+
+                <!--    顾客姓名-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">顾客姓名*</label>
+                    <div class="layui-input-block">
+                        <input id="name1" type="text" name="name1" placeholder="请输入顾客姓名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    电话号码-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电话号码*</label>
+                    <div class="layui-input-block">
+                        <input id="phone" type="text" name="phone" maxlength="11" onkeyup="this.value=this.value.replace(/\D/g,'')" placeholder="请输入电话号码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    订单状态，显示-->
+
+                <!--    食物备注-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">食物备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="tips" placeholder="请输入内容" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!--    中-->
+            <div style="position:absolute;left: 600px;height:460px; border-right:3px solid darkolivegreen;width: 300px; padding-right: 20px; ">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">热菜</label>
+                    <div id="recai" class="layui-input-block">
+                        <input type="checkbox" name="like[write]" title="写作">
+                    </div>
+                </div>
+            </div>
+            <!--    右-->
+            <div style="position:absolute;left: 900px;height:460px; border-right:3px solid darkolivegreen;width: 300px; padding-right: 20px; ">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">凉菜</label>
+                    <div id="liangcai" class="layui-input-block">
+                        <input type="checkbox" name="like[write]" title="写作">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+<!--    隐藏操作-->
+    <div style="display: none;" id="caozuo">
+        <div class="layui-btn-group">
+            <button type="button" class="layui-btn layui-btn-normal caozuoxiugai" id="caozuoxiugai">修改</button>
+            <button type="button" class="layui-btn caozuojiezhang" id="caozuojiezhang">结账</button>
+            <button type="button" class="layui-btn layui-btn-danger caozuoshanchu" id="caozuoshanchu">删除</button>
+        </div>
+    </div>
+<!--    隐藏更改表单-->
+    <div class="site-text" style=" display: none" id="window2"  target="test123">
+        <form class="layui-form" id="tableform2" method="post">
+            <!--    左-->
+            <div style="display: inline-block; position:absolute;border-right:3px solid darkolivegreen;width: 600px; padding-right: 20px; ">
+                <!--    菜单号，jQuery自动生成-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">菜单号</label>
+                    <div class="layui-input-block">
+                        <input id="oid2" type="text" name="oid" value="" readonly="readonly" disabled="disabled" autocomplete="off" class="layui-input">
+                    </div>
+                    <div id="cunoid" style="display: none"></div>
+                </div>
+                <!--    桌台号，从当前点击的桌子获取-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">桌台号</label>
+                    <div class="layui-input-block">
+                        <input id="tid2" type="text" name="tid" value="" readonly="readonly" disabled="disabled" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    顾客人数 number，需要手动输入-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">顾客人数*</label>
+                    <div class="layui-input-block">
+                        <input id="number2" type="text" name="number" placeholder="请输入顾客人数" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    负责员工号-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">负责员工号*</label>
+                    <div class="layui-input-block">
+                        <input id="sid2" type="text" name="sid2" value="" readonly="readonly" disabled="disabled" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    下单时间，不显示，获取提交订单时的时间-->
+
+                <!--    顾客姓名-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">顾客姓名*</label>
+                    <div class="layui-input-block">
+                        <input id="name2" type="text" name="name1" placeholder="请输入顾客姓名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    电话号码-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电话号码*</label>
+                    <div class="layui-input-block">
+                        <input id="phone2" type="text" name="phone" maxlength="11" onkeyup="this.value=this.value.replace(/\D/g,'')" placeholder="请输入电话号码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <!--    订单状态，显示-->
+
+                <!--    食物备注-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">食物备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="tips2" placeholder="请输入内容" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">已点菜品</label>
+                    <div id="selectedfood">
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                        <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                    </div>
+
+                </div>
+            </div>
+            <!--    中-->
+            <div style="position:absolute;left: 600px;height:460px; border-right:3px solid darkolivegreen;width: 300px; padding-right: 20px; ">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">热菜</label>
+                    <div id="recai2" class="layui-input-block">
+                        <input type="checkbox" name="like[write]" title="写作">
+                    </div>
+                </div>
+            </div>
+            <!--    右-->
+            <div style="position:absolute;left: 900px;height:460px; border-right:3px solid darkolivegreen;width: 300px; padding-right: 20px; ">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">凉菜</label>
+                    <div id="liangcai2" class="layui-input-block">
+                        <input type="checkbox" name="like[write]" title="写作">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+<!--隐藏结账和详细信息表单-->
+    <div class="site-text" style=" display: none" id="window3"  target="test123">
+        <span id="payoid" style="margin: 0 20px 0 20px;">1583483258105882044</span> <span id="paytime" style="margin: 0 20px 0 20px;">2020-03-06 19:50:17</span><span id="payname" style="margin: 0 20px 0 20px;">李四</span><span id="payphone" style="margin: 0 20px 0 20px;">12345678911</span>
+        <form class="layui-form" id="tableform3" method="post">
+            <div class="layui-row">
+                <div class="layui-col-xs12">
+                    <span class="magical-coder-layer-contaner">
+                        <div class="magicalcoder-layer-content">
+                            <div id="tabledemo" class="magicalcoder-table"
+                                 mc-attr-bool-loading="true"
+                                 mc-attr-str-url="/orderdetailscurrent"
+                                 mc-attr-str-skin="line"
+                                 mc-attr-bool-page="true"
+                                 mc-attr-str-method="post"
+                                 mc-attr-bool-total-row="false"
+                                 lay-filter="crud"
+                                 mc-attr-bool-even="true">
+                                <span class="magicalcoder-table-th layui-hide" mc-attr-str-field="number">序号</span>
+                                <span class="magicalcoder-table-th layui-hide" mc-attr-str-field="fname">菜名</span>
+                                <span class="magicalcoder-table-th layui-hide" mc-attr-str-field="price">价格</span>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">支付方式</label>
+                <div class="layui-input-block">
+                    <select id="payment" name="payment">
+                        <option value="0">请选择支付方式</option><option value="微信">微信</option><option value="支付宝">支付宝</option><option value="银联刷卡">银联刷卡</option><option value="现金">现金</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">预计价格</label>
+                <div class="layui-input-block">
+                    <input id="preprice" type="text" name="preprice" value="" readonly="readonly" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">折扣价格</label>
+                <div class="layui-input-block">
+                    <input id="discountprice" type="text" value="0" oninput="onkeybordcount()" name="discountprice" placeholder="请输入折扣价格，默认为0" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">实际价格</label>
+                <div class="layui-input-block">
+                    <input id="realprice" type="text" name="realprice" value="" readonly="readonly" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        var $ = layui.jquery, laytpl = layui.laytpl, laydate = layui.laydate, form = layui.form, layedit = layui.layedit, slider = layui.slider, element = layui.element, colorpicker = layui.colorpicker, upload = layui.upload, rate = layui.rate, carousel = layui.carousel, table = layui.table, flow = layui.flow;
+        //oninput事件，当折扣价格输入的内容改变时，实时改变实际价格的值
+        function onkeybordcount(){
+            var preprice= $("#preprice").val();
+            var discountprice=$("#discountprice").val();
+            var realprice= preprice-discountprice;
+            $("#realprice").val(realprice);
+        }
+
+        $(function(){
+            //-----分类------
+            form.on('select(tablestatus)',function (data) {
+                var optionvalue = data.value;
+                $.post("/fenlei",{optionvalue:optionvalue},function (result) {
+                    $("#test").html(result);
+                    //分页
+                    layui.use('laypage',function () {
+                        var laypage = layui.laypage;
+                        $("#test").html(result);
+                        //按使用状态显示不同颜色
+                        $(".xunhuandiv").each(function () {
+                            var status= $($(this).children()[0]).attr("name");
+                            if (status=='0'){
+                                //浅绿色代表空闲
+                                $(this).css("background-color","#808000");
+                            }else if (status=='1'){
+                                //酒红色代表已使用
+                                $(this).css("background-color","#470024");
+                            }
+                        })
+                        laypage.render({
+                            elem: 'demo7' //注意，这里的 demo7 是 ID，不用加 # 号
+                            ,count: $("#hidencount").attr("name") //数据总数，从服务端得到
+                            ,layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip']
+                            ,limit:12
+                            ,jump:function (obj) {
+                                //obj包含了当前分页的所有参数，比如：
+                                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                                console.log(obj.limit); //得到每页显示的条数
+                                $.post("/fenlei",{page:obj.curr,optionvalue:optionvalue},function xianshi(result) {
+                                    $("#test").html(result);
+                                    //按使用状态显示不同颜色
+                                    $(".xunhuandiv").each(function () {
+                                        var status= $($(this).children()[0]).attr("name");
+                                        if (status=='0'){
+                                            //浅绿色代表空闲
+                                            $(this).css("background-color","#808000");
+                                        }else if (status=='1'){
+                                            //酒红色代表已使用
+                                            $(this).css("background-color","#470024");
+                                        }
+                                    })
+
+                                    //点击事件
+                                    $(".xunhuandiv").click(function insertorder() {
+
+                                        var status = $($(this).children()[0]).attr("name");
+                                        //当前所点击的桌台号tid
+                                        var tid=$($(this).children()[1]).attr("name");
+                                        if(status=='0'){
+                                            //----空闲，所有点开是新增----
+                                            //自动生成菜单号
+                                            var outTradeNo="";  //订单号
+                                            for(var i=0;i<6;i++) //6位随机数，用以加在时间戳后面。
+                                            {
+                                                outTradeNo += Math.floor(Math.random()*10);
+                                            }
+                                            outTradeNo = new Date().getTime() + outTradeNo;//时间戳，用来生成订单号。
+                                            layer.open({
+                                                type: 1 //Page层类型
+                                                ,skin: 'layui-layer-molv'
+                                                ,area: ['1250px', '600px']
+                                                ,title: ['新增订单信息','font-size:18px']
+                                                ,btn: ['确定', '取消']
+                                                ,shadeClose: true
+                                                ,shade: 0 //遮罩透明度
+                                                ,maxmin: true //允许全屏最小化
+                                                ,content:$("#window")  //弹窗路径
+                                                ,success:function(layero,index){
+                                                    //将已存在数据填到弹出的表单中
+                                                    $('#oid').val(outTradeNo);
+                                                    $('#tid').val(tid);
+                                                    $.post("/orderstaffs",function (result) {
+                                                        if (result.staffsid != null) {
+                                                            $("#sid").empty();
+                                                            $("#sid").append(new Option("请选择负责员工号", '0'));
+                                                            $.each(result.staffsid, function (index, item) {
+                                                                //new Option(显示文本，value)
+                                                                $('#sid').append(new Option(item.sid, item.sid));// 下拉菜单里添加元素
+                                                            });
+                                                        }else{
+                                                            $("#sid").append(new Option("暂无数据", "0"));
+                                                        }
+                                                        layui.form.render("select");
+                                                    })
+                                                    $.post("/orderfoods",function (result) {
+                                                        if(result.recai!=null){
+                                                            $("#recai").empty();
+                                                            $.each(result.recai,function (index,item) {
+                                                                $("#recai").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                            });
+                                                        }
+                                                        if(result.liangcai!=null){
+                                                            $("#liangcai").empty();
+                                                            $.each(result.liangcai,function (index,item) {
+                                                                $("#liangcai").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                            });
+                                                        }
+                                                        layui.form.render("checkbox");
+                                                    })
+
+                                                }
+                                                ,yes:function (index) {
+                                                    //点确定时
+                                                    //     $($(".layui-input-block")[0]).children("input").each(function () {
+                                                    //         alert($(this).prop("checked"));
+                                                    //     })
+                                                    var oid=$("#oid").val();
+                                                    var tid=$("#tid").val();
+                                                    var number=$("#number").val();
+                                                    var sid=$("#sid").val();
+                                                    var name1=$("#name1").val();
+                                                    var phone=$("#phone").val();
+                                                    var tips=$("#tips").val();
+                                                    var recaiarr = new Array();
+                                                    $($("#recai").children("input")).each(function () {
+                                                        if($(this).prop("checked")){
+                                                            recaiarr.push($(this).attr("name"));
+                                                        }
+                                                    })
+                                                    var liangcaiarr = new Array();
+                                                    $($("#liangcai").children("input")).each(function () {
+                                                        if($(this).prop("checked")){
+                                                            liangcaiarr.push($(this).attr("name"));
+                                                        }
+                                                    })
+                                                    var recaijson = JSON.stringify(recaiarr);
+                                                    var liangcaijson=JSON.stringify(liangcaiarr);
+                                                    console.log("oid="+oid+" tid="+tid+" number="+number+" sid="+sid+" name1="+name1+" phone="+phone+" tips="+tips+" recaiarr="+recaijson+" liangcaiarr="+liangcaijson);
+                                                    $.post("/newInsertOrder"
+                                                        ,{oid:oid,tid:tid,number:number,sid:sid,name1:name1,phone:phone,tips:tips,recaiarr:recaijson,liangcaiarr:liangcaijson}
+                                                        ,function (data) {
+                                                            if(data>0){
+                                                                layer.alert('下单成功',{icon:1,title:'提示'},function(i){
+                                                                    layer.close(i);
+                                                                    layer.close(index);//关闭弹出层
+                                                                    $("#tableform")[0].reset();//重置form
+                                                                })
+                                                            }
+                                                        });
+
+
+                                                }
+                                                ,end:function () {
+                                                    //最后都要重置表单
+                                                    $("#tableform")[0].reset();//重置form
+                                                    //更新页面
+                                                    $.post("/ordertables",{page:obj.curr},xianshi);
+                                                }
+                                            })
+
+
+                                        }else if (status=='1'){
+                                            //已使用，所以点开是修改、结账，取消订单。
+                                            layer.open({
+                                                type: 1 //Page层类型
+                                                ,skin: 'layui-layer-molv'
+                                                ,area: ['194px', '80px']
+                                                ,title: ['操作订单','font-size:18px']
+                                                ,shadeClose: true
+                                                ,shade: 0 //遮罩透明度
+                                                ,maxmin: true //允许全屏最小化
+                                                ,content:$("#caozuo")  //弹窗路径
+                                            });
+                                            //click不能嵌套，如果要嵌套，需要先提前解绑click事件。
+                                            //修改
+                                            $("#caozuoxiugai").unbind('click').click(function(){
+                                                layer.open({
+                                                    type: 1 //Page层类型
+                                                    ,skin: 'layui-layer-molv'
+                                                    ,area: ['1250px', '600px']
+                                                    ,title: ['修改订单','font-size:18px']
+                                                    ,shadeClose: true
+                                                    ,shade: 0 //遮罩透明度
+                                                    ,maxmin: true //允许全屏最小化
+                                                    ,content:$("#window2")  //弹窗路径
+                                                    ,btn: ['确定', '取消']
+                                                    ,success:function (layero,index){
+                                                        //通过桌台号到后台查询其他数据，填到表单中
+                                                        $.post("/updateselectOrderByoid2",{tid:tid},function (result) {
+                                                            $('#oid2').val(result.orders.oid);
+                                                            var oid=$('#oid2').val();
+                                                            $('#tid2').val(result.orders.tid);
+                                                            $('#name2').val(result.orders.name);
+                                                            $('#phone2').val(result.orders.phone);
+                                                            $('#number2').val(result.orders.number);
+                                                            $('#tips2').val(result.tip);
+                                                            $('#sid2').val(result.orders.sid);
+                                                            //已点菜品
+                                                            $.post("/orderselectedfood",{oid:oid},function selectedfood(result) {
+                                                                $('#selectedfood').empty();
+                                                                //alert(result.orderDetails);
+                                                                $.each(result.orderDetails,function (index,item) {
+                                                                    // <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                                                                    $("#selectedfood").append("<div style='display: inline-block;margin-right: 10px;'><span>"+item.fname+"</span><i name='"+item.fname+"' name1='"+item.number+"' class='deletefood layui-icon layui-icon-close' style='margin-left:20px;cursor: pointer;'></i></div>");
+                                                                });
+                                                                //当点击时，删除点击的已点菜品记录
+                                                                $(".deletefood").unbind("click").click(function () {
+                                                                    var foodname = $(this).attr("name");//食物名字
+                                                                    var number = $(this).attr("name1");//序号
+                                                                    $.post("/deleteoneselectedfood",{oid:oid,foodname:foodname,number:number},function (result) {
+                                                                        if(result>0){
+                                                                            $.post("/orderselectedfood",{oid:oid},selectedfood);
+                                                                        }
+                                                                    });
+
+                                                                })
+                                                            });
+
+                                                        });
+                                                        //完善菜谱
+                                                        $.post("/orderfoods",function (result) {
+                                                            if(result.recai!=null){
+                                                                $("#recai2").empty();
+                                                                $.each(result.recai,function (index,item) {
+                                                                    $("#recai2").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                                });
+                                                            }
+                                                            if(result.liangcai!=null){
+                                                                $("#liangcai2").empty();
+                                                                $.each(result.liangcai,function (index,item) {
+                                                                    $("#liangcai2").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                                });
+                                                            }
+                                                            layui.form.render("checkbox");
+                                                        });
+                                                    }
+                                                    ,yes:function (index) {
+                                                        //点确定时
+                                                        //     $($(".layui-input-block")[0]).children("input").each(function () {
+                                                        //         alert($(this).prop("checked"));
+                                                        //     })
+                                                        var oid=$("#oid2").val();
+                                                        var tid=$("#tid2").val();
+                                                        var number=$("#number2").val();
+                                                        var sid=$("#sid2").val();
+                                                        var name1=$("#name2").val();
+                                                        var phone=$("#phone2").val();
+                                                        var tips=$("#tips2").val();
+                                                        var recaiarr = new Array();
+                                                        $($("#recai2").children("input")).each(function () {
+                                                            if($(this).prop("checked")){
+                                                                recaiarr.push($(this).attr("name"));
+                                                            }
+                                                        })
+                                                        var liangcaiarr = new Array();
+                                                        $($("#liangcai2").children("input")).each(function () {
+                                                            if($(this).prop("checked")){
+                                                                liangcaiarr.push($(this).attr("name"));
+                                                            }
+                                                        })
+                                                        var recaijson = JSON.stringify(recaiarr);
+                                                        var liangcaijson=JSON.stringify(liangcaiarr);
+                                                        console.log("oid="+oid+" tid="+tid+" number="+number+" sid="+sid+" name1="+name1+" phone="+phone+" tips="+tips+" recaiarr="+recaijson+" liangcaiarr="+liangcaijson);
+                                                        $.post("/updateSelectedOrder"
+                                                            ,{oid:oid,tid:tid,number:number,sid:sid,name1:name1,phone:phone,tips:tips,recaiarr:recaijson,liangcaiarr:liangcaijson}
+                                                            ,function (data) {
+                                                                if(data>0){
+                                                                    layer.alert('修改订单成功',{icon:1,title:'提示'},function(i){
+                                                                        layer.close(i);
+                                                                        layer.close(index);//关闭弹出层
+                                                                        $("#tableform2")[0].reset();//重置form
+                                                                    })
+                                                                }
+                                                            });
+
+
+                                                    }
+                                                    ,end:function () {
+                                                        //最后都要重置表单
+                                                        $("#tableform2")[0].reset();//重置form
+                                                        //更新页面
+                                                        $.post("/ordertables",{page:obj.curr},xianshi);
+                                                        layer.closeAll();
+                                                    }
+                                                });
+                                            });
+                                            //结账
+                                            $("#caozuojiezhang").unbind('click').click(function () {
+                                                layer.open({
+                                                    type: 1 //Page层类型
+                                                    ,skin: 'layui-layer-molv'
+                                                    ,area: ['600px', '830px']
+                                                    ,title: ['结账','font-size:18px']
+                                                    ,shadeClose: true
+                                                    ,shade: 0 //遮罩透明度
+                                                    ,maxmin: true //允许全屏最小化
+                                                    ,content:$("#window3")  //弹窗路径
+                                                    ,btn: ['支付', '取消']
+                                                    ,success:function(){
+                                                        //通过桌台号到后台查询其他数据，填到表单中
+                                                        $.post("/payselectdata",{tid:tid},function (result) {
+                                                            $("#payoid").text(result.orders.oid);
+                                                            $("#paytime").text(result.time);
+                                                            $("#payname").text(result.orders.name);
+                                                            $("#payphone").text(result.orders.phone);
+                                                            table.reload('tabledemo', {
+                                                                where: { //设定异步数据接口的额外参数，任意设
+                                                                    oid: result.orders.oid
+                                                                }
+                                                                ,page: {
+                                                                    curr: 1 //重新从第 1 页开始
+                                                                }
+                                                            }); //只重载数据
+                                                            $("#preprice").val(result.preprice);
+                                                            var preprice= result.preprice;
+                                                            var discountprice=$("#discountprice").val();
+                                                            var realprice= preprice-discountprice;
+                                                            $("#realprice").val(realprice);
+                                                        })
+                                                    }
+                                                    ,yes:function (index){
+                                                        //支付
+                                                        var oid = $("#payoid").text();
+                                                        var preprice = $("#preprice").val();
+                                                        var discountprice=$("#discountprice").val();
+                                                        var realprice=$("#realprice").val();
+                                                        var payment = $("#payment").val();
+                                                        $.post("/payfinish",{tid:tid,oid:oid,preprice:preprice,discountprice:discountprice,realprice:realprice,payment:payment},function (result) {
+                                                            if(result>0){
+                                                                layer.alert('支付成功！',{icon:1,title:'提示'},function(i){
+                                                                    layer.close(i);
+                                                                    layer.close(index);//关闭弹出层
+                                                                    $("#tableform3")[0].reset();//重置form
+                                                                })
+                                                            }
+                                                        })
+                                                    }
+                                                    ,end:function (){
+                                                        //最后都要重置表单
+                                                        $("#tableform3")[0].reset();//重置form
+                                                        //更新页面
+                                                        $.post("/ordertables",{page:obj.curr},xianshi);
+                                                        layer.closeAll();
+                                                    }
+                                                });
+                                            })
+                                            $("#caozuoshanchu").unbind("click").click(function () {
+                                                layer.confirm('确定删除吗？',{title:'删除'}, function(index){
+                                                    //向服务端发送删除指令og
+                                                    $.post("/deletecurrentorder",{tid:tid},function (result) {
+                                                        layer.close(index);//关闭弹窗
+                                                        if (result>0){
+                                                            $.post("/ordertables",{page:obj.curr},xianshi);
+                                                            layer.closeAll();
+                                                        }
+                                                    })
+                                                });
+
+                                            })
+                                        }
+                                    });
+
+                                    //鼠标滑动滑出事件
+                                    $(".xunhuandiv").hover(function () {
+                                        var status = $($(this).children()[0]).attr("name");
+                                        var tid=$($(this).children()[1]).attr("name");
+                                        var obj = $(this);
+                                        if(status==1){
+                                            $.post("/mouseoverorderdetails",{tid:tid},function (result) {
+                                                // <p th:text="'食物备注：'+${tips}" th:name="${tips}">tips</p>
+                                                $($(obj.children()[4]).children("div")[0]).empty();
+                                                $($(obj.children()[4]).children("div")[0]).append("<span>菜单号：</span><p>"+result.order.oid+"</p>");
+                                                $($(obj.children()[4]).children("div")[0]).append("<span>桌台号：</span><p>"+result.order.tid+"</p>");
+                                                $($(obj.children()[4]).children("div")[0]).append("<span>顾客人数：</span><p>"+result.order.number+"</p>");
+                                                $($(obj.children()[4]).children("div")[0]).append("<span>负责员工号：</span><p>"+result.order.sid+"</p>");
+                                                $($(obj.children()[4]).children("div")[0]).append("<span>顾客姓名：</span><p>"+result.order.name+"</p>");
+                                                $($(obj.children()[4]).children("div")[0]).append("<span>电话号码：</span><p>"+result.order.phone+"</p>");
+                                                $($(obj.children()[4]).children("div")[0]).append("<span>食物备注：</span><p>"+result.tips+"</p>");
+                                                $($(obj.children()[4]).children("div")[1]).empty();
+                                                $($(obj.children()[4]).children("div")[1]).append("<span>已点菜品</span>");
+                                                $.each(result.orderdetail,function (index,item) {
+                                                    $($(obj.children()[4]).children("div")[1]).append("<div style='margin-left:30px; '><span>"+item.fname+"</span><span>"+item.price+"</span></div>");
+                                                });
+                                            })
+                                            $($(this).children()[4]).css("display","block");
+                                        }
+
+                                    },function () {
+                                        $($(this).children()[4]).css("display","none");
+                                    })
+                                })
+                            }
+                        });
+                    });
+                });
+            });
+
+
+            //显示主页
+            $.post("/ordertables",function (result) {
+                $("#test").html(result);
+                //分页
+                layui.use('laypage',function () {
+                    var laypage = layui.laypage;
+                    $("#test").html(result);
+                    //按使用状态显示不同颜色
+                    $(".xunhuandiv").each(function () {
+                        var status= $($(this).children()[0]).attr("name");
+                        if (status=='0'){
+                            //浅绿色代表空闲
+                            $(this).css("background-color","#808000");
+                        }else if (status=='1'){
+                            //酒红色代表已使用
+                            $(this).css("background-color","#470024");
+                        }
+                    })
+                    laypage.render({
+                        elem: 'demo7' //注意，这里的 demo7 是 ID，不用加 # 号
+                        ,count: $("#hidencount").attr("name") //数据总数，从服务端得到
+                        ,layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip']
+                        ,limit:12
+                        ,jump:function (obj) {
+                            //obj包含了当前分页的所有参数，比如：
+                            console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                            console.log(obj.limit); //得到每页显示的条数
+                            $.post("/ordertables",{page:obj.curr},function xianshi(result) {
+                                $("#test").html(result);
+                                //按使用状态显示不同颜色
+                                $(".xunhuandiv").each(function () {
+                                    var status= $($(this).children()[0]).attr("name");
+                                    if (status=='0'){
+                                        //浅绿色代表空闲
+                                        $(this).css("background-color","#808000");
+                                    }else if (status=='1'){
+                                        //酒红色代表已使用
+                                        $(this).css("background-color","#470024");
+                                    }
+                                })
+
+                                //点击事件
+                                $(".xunhuandiv").click(function insertorder() {
+
+                                    var status = $($(this).children()[0]).attr("name");
+                                    //当前所点击的桌台号tid
+                                    var tid=$($(this).children()[1]).attr("name");
+                                    if(status=='0'){
+                                        //----空闲，所有点开是新增----
+                                         //自动生成菜单号
+                                        var outTradeNo="";  //订单号
+                                        for(var i=0;i<6;i++) //6位随机数，用以加在时间戳后面。
+                                        {
+                                            outTradeNo += Math.floor(Math.random()*10);
+                                        }
+                                        outTradeNo = new Date().getTime() + outTradeNo;//时间戳，用来生成订单号。
+                                        layer.open({
+                                            type: 1 //Page层类型
+                                            ,skin: 'layui-layer-molv'
+                                            ,area: ['1250px', '600px']
+                                            ,title: ['新增订单信息','font-size:18px']
+                                            ,btn: ['确定', '取消']
+                                            ,shadeClose: true
+                                            ,shade: 0 //遮罩透明度
+                                            ,maxmin: true //允许全屏最小化
+                                            ,content:$("#window")  //弹窗路径
+                                            ,success:function(layero,index){
+                                                //将已存在数据填到弹出的表单中
+                                                $('#oid').val(outTradeNo);
+                                                $('#tid').val(tid);
+                                                $.post("/orderstaffs",function (result) {
+                                                    if (result.staffsid != null) {
+                                                        $("#sid").empty();
+                                                        $("#sid").append(new Option("请选择负责员工号", '0'));
+                                                        $.each(result.staffsid, function (index, item) {
+                                                            //new Option(显示文本，value)
+                                                            $('#sid').append(new Option(item.sid, item.sid));// 下拉菜单里添加元素
+                                                        });
+                                                    }else{
+                                                        $("#sid").append(new Option("暂无数据", "0"));
+                                                    }
+                                                     layui.form.render("select");
+                                                })
+                                                $.post("/orderfoods",function (result) {
+                                                    if(result.recai!=null){
+                                                        $("#recai").empty();
+                                                        $.each(result.recai,function (index,item) {
+                                                            $("#recai").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                        });
+                                                    }
+                                                    if(result.liangcai!=null){
+                                                        $("#liangcai").empty();
+                                                        $.each(result.liangcai,function (index,item) {
+                                                            $("#liangcai").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                        });
+                                                    }
+                                                    layui.form.render("checkbox");
+                                                })
+
+                                            }
+                                            ,yes:function (index) {
+                                                //点确定时
+                                                //     $($(".layui-input-block")[0]).children("input").each(function () {
+                                                //         alert($(this).prop("checked"));
+                                                //     })
+                                                var oid=$("#oid").val();
+                                                var tid=$("#tid").val();
+                                                var number=$("#number").val();
+                                                var sid=$("#sid").val();
+                                                var name1=$("#name1").val();
+                                                var phone=$("#phone").val();
+                                                var tips=$("#tips").val();
+                                                var recaiarr = new Array();
+                                                $($("#recai").children("input")).each(function () {
+                                                    if($(this).prop("checked")){
+                                                        recaiarr.push($(this).attr("name"));
+                                                    }
+                                                })
+                                                var liangcaiarr = new Array();
+                                                $($("#liangcai").children("input")).each(function () {
+                                                    if($(this).prop("checked")){
+                                                        liangcaiarr.push($(this).attr("name"));
+                                                    }
+                                                })
+                                                var recaijson = JSON.stringify(recaiarr);
+                                                var liangcaijson=JSON.stringify(liangcaiarr);
+                                                console.log("oid="+oid+" tid="+tid+" number="+number+" sid="+sid+" name1="+name1+" phone="+phone+" tips="+tips+" recaiarr="+recaijson+" liangcaiarr="+liangcaijson);
+                                                $.post("/newInsertOrder"
+                                                ,{oid:oid,tid:tid,number:number,sid:sid,name1:name1,phone:phone,tips:tips,recaiarr:recaijson,liangcaiarr:liangcaijson}
+                                                ,function (data) {
+                                                    if(data>0){
+                                                        layer.alert('下单成功',{icon:1,title:'提示'},function(i){
+                                                            layer.close(i);
+                                                            layer.close(index);//关闭弹出层
+                                                            $("#tableform")[0].reset();//重置form
+                                                        })
+                                                    }
+                                                });
+
+
+                                            }
+                                            ,end:function () {
+                                                //最后都要重置表单
+                                                $("#tableform")[0].reset();//重置form
+                                                //更新页面
+                                                $.post("/ordertables",{page:obj.curr},xianshi);
+                                            }
+                                        })
+
+
+                                    }else if (status=='1'){
+                                        //已使用，所以点开是修改、结账，取消订单。
+                                        layer.open({
+                                            type: 1 //Page层类型
+                                            ,skin: 'layui-layer-molv'
+                                            ,area: ['194px', '80px']
+                                            ,title: ['操作订单','font-size:18px']
+                                            ,shadeClose: true
+                                            ,shade: 0 //遮罩透明度
+                                            ,maxmin: true //允许全屏最小化
+                                            ,content:$("#caozuo")  //弹窗路径
+                                        });
+                                        //click不能嵌套，如果要嵌套，需要先提前解绑click事件。
+                                        //修改
+                                        $("#caozuoxiugai").unbind('click').click(function(){
+                                            layer.open({
+                                                type: 1 //Page层类型
+                                                ,skin: 'layui-layer-molv'
+                                                ,area: ['1250px', '600px']
+                                                ,title: ['修改订单','font-size:18px']
+                                                ,shadeClose: true
+                                                ,shade: 0 //遮罩透明度
+                                                ,maxmin: true //允许全屏最小化
+                                                ,content:$("#window2")  //弹窗路径
+                                                ,btn: ['确定', '取消']
+                                                ,success:function (layero,index){
+                                                    //通过桌台号到后台查询其他数据，填到表单中
+                                                    $.post("/updateselectOrderByoid2",{tid:tid},function (result) {
+                                                        $('#oid2').val(result.orders.oid);
+                                                        var oid=$('#oid2').val();
+                                                        $('#tid2').val(result.orders.tid);
+                                                        $('#name2').val(result.orders.name);
+                                                        $('#phone2').val(result.orders.phone);
+                                                        $('#number2').val(result.orders.number);
+                                                        $('#tips2').val(result.tip);
+                                                        $('#sid2').val(result.orders.sid);
+                                                        //已点菜品
+                                                        $.post("/orderselectedfood",{oid:oid},function selectedfood(result) {
+                                                            $('#selectedfood').empty();
+                                                            //alert(result.orderDetails);
+                                                            $.each(result.orderDetails,function (index,item) {
+                                                                // <div style="display: inline-block;"><span>鱼香肉丝</span><i class="deletefood layui-icon layui-icon-close" style="margin-left:20px;cursor: pointer;"></i></div>
+                                                                $("#selectedfood").append("<div style='display: inline-block;margin-right: 10px;'><span>"+item.fname+"</span><i name='"+item.fname+"' name1='"+item.number+"' class='deletefood layui-icon layui-icon-close' style='margin-left:20px;cursor: pointer;'></i></div>");
+                                                            });
+                                                            //当点击时，删除点击的已点菜品记录
+                                                            $(".deletefood").unbind("click").click(function () {
+                                                                var foodname = $(this).attr("name");//食物名字
+                                                                var number = $(this).attr("name1");//序号
+                                                                $.post("/deleteoneselectedfood",{oid:oid,foodname:foodname,number:number},function (result) {
+                                                                    if(result>0){
+                                                                        $.post("/orderselectedfood",{oid:oid},selectedfood);
+                                                                    }
+                                                                });
+
+                                                            })
+                                                        });
+
+                                                    });
+                                                    //完善菜谱
+                                                    $.post("/orderfoods",function (result) {
+                                                        if(result.recai!=null){
+                                                            $("#recai2").empty();
+                                                            $.each(result.recai,function (index,item) {
+                                                                $("#recai2").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                            });
+                                                        }
+                                                        if(result.liangcai!=null){
+                                                            $("#liangcai2").empty();
+                                                            $.each(result.liangcai,function (index,item) {
+                                                                $("#liangcai2").append("<input type='checkbox' name='"+item.name+"' title='"+item.name+"'>");
+                                                            });
+                                                        }
+                                                        layui.form.render("checkbox");
+                                                    });
+                                                }
+                                                ,yes:function (index) {
+                                                    //点确定时
+                                                    //     $($(".layui-input-block")[0]).children("input").each(function () {
+                                                    //         alert($(this).prop("checked"));
+                                                    //     })
+                                                    var oid=$("#oid2").val();
+                                                    var tid=$("#tid2").val();
+                                                    var number=$("#number2").val();
+                                                    var sid=$("#sid2").val();
+                                                    var name1=$("#name2").val();
+                                                    var phone=$("#phone2").val();
+                                                    var tips=$("#tips2").val();
+                                                    var recaiarr = new Array();
+                                                    $($("#recai2").children("input")).each(function () {
+                                                        if($(this).prop("checked")){
+                                                            recaiarr.push($(this).attr("name"));
+                                                        }
+                                                    })
+                                                    var liangcaiarr = new Array();
+                                                    $($("#liangcai2").children("input")).each(function () {
+                                                        if($(this).prop("checked")){
+                                                            liangcaiarr.push($(this).attr("name"));
+                                                        }
+                                                    })
+                                                    var recaijson = JSON.stringify(recaiarr);
+                                                    var liangcaijson=JSON.stringify(liangcaiarr);
+                                                    console.log("oid="+oid+" tid="+tid+" number="+number+" sid="+sid+" name1="+name1+" phone="+phone+" tips="+tips+" recaiarr="+recaijson+" liangcaiarr="+liangcaijson);
+                                                    $.post("/updateSelectedOrder"
+                                                        ,{oid:oid,tid:tid,number:number,sid:sid,name1:name1,phone:phone,tips:tips,recaiarr:recaijson,liangcaiarr:liangcaijson}
+                                                        ,function (data) {
+                                                            if(data>0){
+                                                                layer.alert('修改订单成功',{icon:1,title:'提示'},function(i){
+                                                                    layer.close(i);
+                                                                    layer.close(index);//关闭弹出层
+                                                                    $("#tableform2")[0].reset();//重置form
+                                                                })
+                                                            }
+                                                        });
+
+
+                                                }
+                                                ,end:function () {
+                                                    //最后都要重置表单
+                                                    $("#tableform2")[0].reset();//重置form
+                                                    //更新页面
+                                                    $.post("/ordertables",{page:obj.curr},xianshi);
+                                                    layer.closeAll();
+                                                }
+                                            });
+                                        });
+                                        //结账
+                                        $("#caozuojiezhang").unbind('click').click(function () {
+                                            layer.open({
+                                                type: 1 //Page层类型
+                                                ,skin: 'layui-layer-molv'
+                                                ,area: ['600px', '830px']
+                                                ,title: ['结账','font-size:18px']
+                                                ,shadeClose: true
+                                                ,shade: 0 //遮罩透明度
+                                                ,maxmin: true //允许全屏最小化
+                                                ,content:$("#window3")  //弹窗路径
+                                                ,btn: ['支付', '取消']
+                                                ,success:function(){
+                                                    //通过桌台号到后台查询其他数据，填到表单中
+                                                    $.post("/payselectdata",{tid:tid},function (result) {
+                                                        $("#payoid").text(result.orders.oid);
+                                                        $("#paytime").text(result.time);
+                                                        $("#payname").text(result.orders.name);
+                                                        $("#payphone").text(result.orders.phone);
+                                                        table.reload('tabledemo', {
+                                                            where: { //设定异步数据接口的额外参数，任意设
+                                                                oid: result.orders.oid
+                                                            }
+                                                            ,page: {
+                                                                curr: 1 //重新从第 1 页开始
+                                                            }
+                                                        }); //只重载数据
+                                                        $("#preprice").val(result.preprice);
+                                                        var preprice= result.preprice;
+                                                        var discountprice=$("#discountprice").val();
+                                                        var realprice= preprice-discountprice;
+                                                        $("#realprice").val(realprice);
+                                                    })
+                                                }
+                                                ,yes:function (index){
+                                                    //支付
+                                                    var oid = $("#payoid").text();
+                                                    var preprice = $("#preprice").val();
+                                                    var discountprice=$("#discountprice").val();
+                                                    var realprice=$("#realprice").val();
+                                                    var payment = $("#payment").val();
+                                                    $.post("/payfinish",{tid:tid,oid:oid,preprice:preprice,discountprice:discountprice,realprice:realprice,payment:payment},function (result) {
+                                                        if(result>0){
+                                                            layer.alert('支付成功！',{icon:1,title:'提示'},function(i){
+                                                                layer.close(i);
+                                                                layer.close(index);//关闭弹出层
+                                                                $("#tableform3")[0].reset();//重置form
+                                                            })
+                                                        }
+                                                    })
+                                                }
+                                                ,end:function (){
+                                                    //最后都要重置表单
+                                                    $("#tableform3")[0].reset();//重置form
+                                                    //更新页面
+                                                    $.post("/ordertables",{page:obj.curr},xianshi);
+                                                    layer.closeAll();
+                                                }
+                                            });
+                                        })
+                                        $("#caozuoshanchu").unbind("click").click(function () {
+                                            layer.confirm('确定删除吗？',{title:'删除'}, function(index){
+                                                //向服务端发送删除指令og
+                                                $.post("/deletecurrentorder",{tid:tid},function (result) {
+                                                    layer.close(index);//关闭弹窗
+                                                    if (result>0){
+                                                        $.post("/ordertables",{page:obj.curr},xianshi);
+                                                        layer.closeAll();
+                                                    }
+                                                })
+                                            });
+
+                                        })
+                                    }
+                                });
+
+                                //鼠标滑动滑出事件
+                                $(".xunhuandiv").hover(function () {
+                                    var status = $($(this).children()[0]).attr("name");
+                                    var tid=$($(this).children()[1]).attr("name");
+                                    var obj =$(this);
+                                    if(status==1){
+                                        $.post("/mouseoverorderdetails",{tid:tid},function (result) {
+                                            // <p th:text="'食物备注：'+${tips}" th:name="${tips}">tips</p>
+                                            //     console.log(result);
+
+                                            // console.log($($(obj.children()[4]).children("div")[0]).text());
+                                             $($(obj.children()[4]).children("div")[0]).empty();
+                                            $($(obj.children()[4]).children("div")[0]).append("<span>菜单号：</span><p>"+result.order.oid+"</p>");
+                                            $($(obj.children()[4]).children("div")[0]).append("<span>桌台号：</span><p>"+result.order.tid+"</p>");
+                                            $($(obj.children()[4]).children("div")[0]).append("<span>顾客人数：</span><p>"+result.order.number+"</p>");
+                                            $($(obj.children()[4]).children("div")[0]).append("<span>负责员工号：</span><p>"+result.order.sid+"</p>");
+                                            $($(obj.children()[4]).children("div")[0]).append("<span>顾客姓名：</span><p>"+result.order.name+"</p>");
+                                            $($(obj.children()[4]).children("div")[0]).append("<span>电话号码：</span><p>"+result.order.phone+"</p>");
+                                            $($(obj.children()[4]).children("div")[0]).append("<span>食物备注：</span><p>"+result.tips+"</p>");
+                                            $($(obj.children()[4]).children("div")[1]).empty();
+                                            $($(obj.children()[4]).children("div")[1]).append("<span>已点菜品</span>");
+                                            $.each(result.orderdetail,function (index,item) {
+                                                $($(obj.children()[4]).children("div")[1]).append("<div style='margin-left:30px; '><span>"+item.fname+"</span><span>"+item.price+"</span></div>");
+                                            });
+                                        })
+                                        // console.log($($(this).children()[4]));
+                                        $($(this).children()[4]).css("display","block");
+                                    }
+
+                                },function () {
+                                  $($(this).children()[4]).css("display","none");
+                                })
+                            })
+                        }
+                    });
+                });
+            })
+        });
+
+
+
+
+
+        //以下脚本为标签属性转换成layui组件的还原过程
+        //调试:打开浏览器控制台(F12),在代码中某行增加 debugger 即可调试
+
+        var magicalDragLayuiUtil = {
+            rebuildLayUiControls: function () {
+                var _t = this;
+                //日期
+                $(".magicalcoder-laydate").each(function (idx, item) {
+                    laydate.render(_t.iteratorAttr({
+                        elem: item
+                    }, item));
+                })
+                //富文本
+                $(".magicalcoder-layedit").each(function (idx, item) {
+                    var mcDataId = $(item).attr("id");
+                    if (mcDataId) {
+                        layedit.build(mcDataId, {
+                            height: 300
+                        });
+                    }
+                })
+                //外键
+                $(".magicalcoder-foreign-select2").each(function (idx, item) {
+                    var mcDataId = $(item).attr("id");
+                    if (mcDataId) {
+                        $("#" + mcDataId).select2({
+                            allowClear: true,
+                            width: "150px",
+                            delay: 500,
+                        });
+                    }
+                })
+                //颜色选择器
+                $(".magicalcoder-color-picker").each(function (idx, item) {
+                    colorpicker.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //上传组件
+                $(".magicalcoder-layupload").each(function (idx, item) {
+                    upload.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //滑块
+                $(".magicalcoder-slider").each(function (idx, item) {
+                    slider.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //评分
+                $(".magicalcoder-rate").each(function (idx, item) {
+                    rate.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //轮播
+                $(".layui-carousel").each(function (idx, item) {
+                    carousel.render(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //流加载
+                $(".magicalcoder-flow").each(function (idx, item) {
+                    flow.load(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //代码
+                $(".magicalcoder-code").each(function (idx, item) {
+                    layui.code(_t.iteratorAttr({
+                        elem: $(item)}, item));
+                })
+                //弹窗
+                $(".magicalcoder-layer").each(function (idx, item) {
+                    //先隐藏起来
+                    $(this).next().hide();
+                    $(this).click(function () {
+                        var config = _t.iteratorAttr({
+                            elem: $(item)}, item);
+                        var type = config.type;
+                        if (type + '' == 1) {
+                            config.content = $(this).next();
+                            if (!config.content.hasClass("magicalcoder-layer-content")) {
+                                config.content = config.content.find(".magicalcoder-layer-content")
+                            }
+                        }
+                        if (config.btn) {
+                            config.btn = config.btn.split(",")
+                        }
+                        if (config.area) {
+                            config.area = config.area.split(",")
+                        }
+                        layer.open(config)
+                    })
+                })
+                //动态表格 我们单独封装了layui-table的初始化方式 至于数据排序 返回格式 等操作请根据你的具体环境自行封装
+                $(".magicalcoder-table").each(function (idx,
+                    item) {
+                    var cols = [];
+                    //读取列配置
+                    $(this).find(".magicalcoder-table-th").each(function (i, th) {
+                        cols.push(_t.iteratorAttr({
+                            title: $(this).text()}, th));
+                    })
+                    var tableConfig = _t.iteratorAttr({
+                        elem: $(item),
+                        cols: [cols],
+                        height: 470
+                        },
+                        item);
+                    //初始化表格 至于返回的数据格式 您可以根据自己的系统自行改造 这里仅做一个示例 参考js\\data\\list.json
+                    table.render(tableConfig);
+                })
+                //部分组件初始化
+                element.init();
+                //表单初始化
+                form.render();
+            },
+            //将标签上的属性 转换成layui函数初始化时的参数名:参数值
+            iteratorAttr: function (renderConfig, dom) {
+                var attrs = dom.attributes;
+                for (var i = 0; i < attrs.length; i++) {
+                    var attr = attrs[i];
+                    var name = attr.name;
+                    var value = attr.value;
+                    if (name.indexOf("mc-") === 0) {
+                        name = name.replace("mc-attr-", '');
+                        name = name.replace("mc-event-", '');
+                        if (name.indexOf('str-') === 0) {
+                            name = name.replace('str-', '');
+                        } else if (name.indexOf('bool-') === 0) {
+                            name = name.replace('bool-', '');
+                            value == 'true' || value === '' ? value = true: value = value;
+                            value == 'false' ? value = false: value = value;
+                        } else if (name.indexOf('num-') === 0) {
+                            name = name.replace('num-', '');
+                            if (value !== '' && !isNaN(value)) {
+                                value = parseFloat(value);
+                            }
+                        } else if (name.indexOf('json-') === 0) {
+                            name = name.replace('json-', '');
+                            if (value !== '') {
+                                value = JSON.parse(value);
+                            }
+                        }
+                        renderConfig[this.htmlAttrNameToTuoFeng(name)] = value;
+                    }
+                }
+                return renderConfig;
+            },
+            //user-name -> userName html上的标签名转换成驼峰名称
+            htmlAttrNameToTuoFeng: function (name) {
+                var arr = name.split("-");
+                var newArr = []
+                for (var i = 0; i < arr.length; i++) {
+                    if (i != 0) {
+                        if (arr[i] != '') {
+                            newArr.push(this.firstCharToUpLower(arr[i]));
+                        }
+                    } else {
+                        newArr.push(arr[i]);
+                    }
+                }
+                return newArr.join('');
+            },
+            //首字母大写
+            firstCharToUpLower: function (name) {
+                var arr = name.split("");
+                arr[0] = arr[0].toUpperCase();
+                return arr.join('');
+            },
+        }
+        magicalDragLayuiUtil.rebuildLayUiControls();
+
+        new McECharts().render();
+    </script>
+</body>
+</html>

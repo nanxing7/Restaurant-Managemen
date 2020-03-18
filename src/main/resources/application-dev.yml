@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  resources:
+    static-locations:
+      - classpath:/static/
+      - classpath:/templates/
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/cygl?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=CTT
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #thymelea模板配置
+  thymeleaf:
+    #thymeleaf 所在路径
+    prefix: classpath:/templates/
+    #thymeleaf 后缀
+    suffix: .html
+    #thymeleaf 采用的标准
+    mode: HTML5
+    #thymeleaf 编码格式
+    encoding: UTF-8
+    #缓存关掉
+    cache: false
+mybatis:
+  mapper-locations: classpath:com.fyd.cygl.dao/*Mapper.xml
+  type-aliases-package: com.fyd.cygl.pojo
+
+#showSql
+logging:
+  level:
+    com:
+      fyd:
+        cygl:
+          dao: debug
+    org:
+      springframework:
+        boot:
+          autoconfigure: ERROR
+
